@@ -12,15 +12,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlightManagement.API", "Fli
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{53B4B30B-2B55-432A-839A-4BEE918381B8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlightManagement.Business.Tests", "FlightManagement.Business.Tests\FlightManagement.Business.Tests.csproj", "{9374805C-F2CD-45DB-A71B-51FE06288896}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebUi", "WebUi", "{491BB5B1-CA45-4410-8F94-163D8950839E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{7E865056-AACC-4C6B-9219-137347748B10}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{7F91F8EA-B9EF-4384-9ABA-A963C9608B31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightManagement.Infrastructure", "FlightManagement.Infrastructure\FlightManagement.Infrastructure.csproj", "{554EB015-A748-4908-ACE4-ABB62EDB7F70}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlightManagement.Infrastructure", "FlightManagement.Infrastructure\FlightManagement.Infrastructure.csproj", "{554EB015-A748-4908-ACE4-ABB62EDB7F70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightManagement.Business.Tests", "FlightManagement.Business.Tests\FlightManagement.Business.Tests.csproj", "{34FB3762-C4B6-40E2-9F63-2FD7581C38DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,14 +36,14 @@ Global
 		{9A7BAC77-F274-4979-B5CC-30A529632078}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A7BAC77-F274-4979-B5CC-30A529632078}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A7BAC77-F274-4979-B5CC-30A529632078}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9374805C-F2CD-45DB-A71B-51FE06288896}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9374805C-F2CD-45DB-A71B-51FE06288896}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9374805C-F2CD-45DB-A71B-51FE06288896}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9374805C-F2CD-45DB-A71B-51FE06288896}.Release|Any CPU.Build.0 = Release|Any CPU
 		{554EB015-A748-4908-ACE4-ABB62EDB7F70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{554EB015-A748-4908-ACE4-ABB62EDB7F70}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{554EB015-A748-4908-ACE4-ABB62EDB7F70}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{554EB015-A748-4908-ACE4-ABB62EDB7F70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34FB3762-C4B6-40E2-9F63-2FD7581C38DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34FB3762-C4B6-40E2-9F63-2FD7581C38DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34FB3762-C4B6-40E2-9F63-2FD7581C38DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34FB3762-C4B6-40E2-9F63-2FD7581C38DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -51,8 +51,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{A9BC6722-78B4-4061-8B28-0BA005C868BF} = {7E865056-AACC-4C6B-9219-137347748B10}
 		{9A7BAC77-F274-4979-B5CC-30A529632078} = {491BB5B1-CA45-4410-8F94-163D8950839E}
-		{9374805C-F2CD-45DB-A71B-51FE06288896} = {53B4B30B-2B55-432A-839A-4BEE918381B8}
 		{554EB015-A748-4908-ACE4-ABB62EDB7F70} = {7F91F8EA-B9EF-4384-9ABA-A963C9608B31}
+		{34FB3762-C4B6-40E2-9F63-2FD7581C38DD} = {53B4B30B-2B55-432A-839A-4BEE918381B8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FA282E20-799E-4A88-B840-F8D1671B044D}

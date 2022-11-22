@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -52,15 +51,15 @@ namespace FlightManagement.Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "Companies",
                 columns: new[] { "Id", "CreationDate", "Name" },
-                values: new object[] { new Guid("d826711a-de18-406c-96bc-4e084178f37b"), new DateTime(1999, 5, 9, 0, 0, 0, 0, DateTimeKind.Unspecified), "Atlas" });
+                values: new object[] { new Guid("031c70cc-18f6-442e-a7e1-2c61124705c2"), new DateTime(1999, 5, 9, 0, 0, 0, 0, DateTimeKind.Unspecified), "Atlas" });
 
             migrationBuilder.InsertData(
                 table: "People",
                 columns: new[] { "Id", "DateOfBirth", "Discriminator", "Gender", "Name", "Surname" },
                 values: new object[,]
                 {
-                    { new Guid("cbfc427b-53df-4d86-b4f9-f6838d884ffe"), new DateTime(1985, 4, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "Person", 0, "Ion", "Titi" },
-                    { new Guid("e941dfcd-89d4-4f50-bf8b-42e85d08e641"), new DateTime(2002, 6, 24, 0, 0, 0, 0, DateTimeKind.Unspecified), "Person", 0, "Leahu", "Vlad" }
+                    { new Guid("405794bf-d6ca-4510-bedb-f8beee78d903"), new DateTime(1985, 4, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "Person", 0, "Ion", "Titi" },
+                    { new Guid("9fcf25d8-04d2-4d7f-85b7-66cded3cd324"), new DateTime(2002, 6, 24, 0, 0, 0, 0, DateTimeKind.Unspecified), "Person", 0, "Leahu", "Vlad" }
                 });
 
             migrationBuilder.CreateIndex(

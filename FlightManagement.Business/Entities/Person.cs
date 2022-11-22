@@ -10,14 +10,21 @@ namespace FlightManagement.Business.Entities
         public DateTime DateOfBirth { get; private set; }
         public Gender Gender { get; private set; }
 
-        public static Result<Person> Create(string name, string surname, DateTime dateOfBirth, string gender)
+        public static Result<Person> Create(
+            string name,
+            string surname,
+            DateTime dateOfBirth,
+            string gender
+        )
         {
             if (!Enum.TryParse<Gender>(gender, out var personGender))
             {
                 var expectedGenderValues = Enum.GetNames(typeof(Gender));
                 var textExpectedGenderValues = string.Join(", ", expectedGenderValues);
 
-                return Result<Person>.Failure($"The provided gender {gender} is not one from the values: {textExpectedGenderValues}");
+                return Result<Person>.Failure(
+                    $"The provided gender {gender} is not one from the values: {textExpectedGenderValues}"
+                );
             }
 
             var person = new Person
@@ -33,4 +40,3 @@ namespace FlightManagement.Business.Entities
         }
     }
 }
-

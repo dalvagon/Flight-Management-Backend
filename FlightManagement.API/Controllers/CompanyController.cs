@@ -1,4 +1,5 @@
-﻿using FlightManagement.API.Features.Companies;
+﻿using FlightManagement.Business.Entities;
+using FlightManagement.Infrastructure.Generics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManagement.API.Controllers
@@ -7,17 +8,17 @@ namespace FlightManagement.API.Controllers
     [ApiController]
     public class CompanyController : ControllerBase
     {
-        private readonly ICompanyRepository companyRepository;
+        private readonly IRepository<Company> companyRepository;
 
-        public CompanyController(ICompanyRepository companyRepository)
+        public CompanyController(IRepository<Company> companyRepository)
         {
             this.companyRepository = companyRepository;
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult All()
         {
-            return Ok(companyRepository.GetAll());
+            return Ok(companyRepository.All());
         }
     }
 }

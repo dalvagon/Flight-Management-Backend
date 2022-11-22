@@ -1,5 +1,5 @@
-﻿using FlightManagement.API.Features.Companies;
-using FlightManagement.API.Features.Persons;
+﻿using FlightManagement.Business.Entities;
+using FlightManagement.Infrastructure.Generics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManagement.API.Controllers
@@ -8,17 +8,17 @@ namespace FlightManagement.API.Controllers
     [ApiController]
     public class PeopleController : ControllerBase
     {
-        private readonly IPersonRepository personRepository;
+        private readonly IRepository<Person> personRepository;
 
-        public PeopleController(IPersonRepository personRepository)
+        public PeopleController(IRepository<Person> personRepository)
         {
             this.personRepository = personRepository;
         }
 
         [HttpGet]
-        public IActionResult GetALl()
+        public IActionResult All()
         {
-            return Ok(personRepository.GetAll());
+            return Ok(personRepository.All());
         }
     }
 }
