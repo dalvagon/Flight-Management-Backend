@@ -1,4 +1,5 @@
-﻿using FlightManagement.Business.Helpers;
+﻿using FlightManagement.Domain.Helpers;
+using FlightManagement.DOmain.Helpers;
 
 namespace FlightManagement.Domain.Entities
 {
@@ -10,40 +11,52 @@ namespace FlightManagement.Domain.Entities
         public int PassengerCapacity { get; private set; }
         public double BaggageWeightCapacity { get; private set; }
         public double MaxWeightPerBaggage { get; private set; }
-        public Tuple<double, double, double> MaxBaggageDimensions { get; private set; }
+        public double MaxBaggageWeightPerPassenger { get; private set; }
+        public double MaxBaggageWidth { get; private set; }
+        public double MaxBaggageHeight { get; private set; }
+        public double MaxBaggageLength { get; private set; }
         public List<Passenger> Passengers { get; private set; } = new List<Passenger>();
         public Airport DepartureAirport { get; private set; }
         public Airport DestinationAirport { get; private set; }
-        public List<Airport> IntermediateStops { get; private set; }
+        public List<Airport> IntermediateStops { get; private set; } = new List<Airport>();
 
-        public Flight(
+        public static Result<Flight> Create(
             DateTime departureDate,
             DateTime arrivalDate,
             int passengerCapacity,
             double baggageWeightCapacity,
             double maxWeightPerBaggage,
-            Tuple<double, double, double> maxBaggageDimensions,
-            List<Passenger> passengers,
+            double maxBaggageWeightPerPassenger,
+            double maxBaggageWidth,
+            double maxBaggageHeight,
+            double maxBaggageLenght,
             Airport departureAirport,
-            Airport destinationAirport,
-            List<Airport> intermediateStops
+            Airport destinationAirport
         )
         {
-            Id = Guid.NewGuid();
-            DepartureDate = departureDate;
-            ArrivalDate = arrivalDate;
-            PassengerCapacity = passengerCapacity;
-            BaggageWeightCapacity = baggageWeightCapacity;
-            MaxWeightPerBaggage = maxWeightPerBaggage;
-            MaxBaggageDimensions = maxBaggageDimensions;
-            Passengers = passengers;
-            DepartureAirport = departureAirport;
-            DestinationAirport = destinationAirport;
-            IntermediateStops = intermediateStops;
+            return Result<Flight>.Success(
+                new Flight()
+                {
+                    Id = Guid.NewGuid(),
+                    DepartureDate = departureDate,
+                    ArrivalDate = arrivalDate,
+                    PassengerCapacity = passengerCapacity,
+                    BaggageWeightCapacity = baggageWeightCapacity,
+                    MaxWeightPerBaggage = maxWeightPerBaggage,
+                    MaxBaggageWeightPerPassenger = maxBaggageWeightPerPassenger,
+                    MaxBaggageWidth = maxBaggageWidth,
+                    MaxBaggageHeight = maxBaggageHeight,
+                    MaxBaggageLength = maxBaggageLenght,
+                    DepartureAirport = departureAirport,
+                    DestinationAirport = destinationAirport
+                }
+            );
         }
 
         public Result AttachPassengersToFlight(List<Passenger> passengers)
         {
+            double totalWeigth = 0;
+
             foreach (var passenger in passengers)
             {
                 if (Passengers.Contains(passenger))
@@ -54,26 +67,67 @@ namespace FlightManagement.Domain.Entities
                             + " is already a passenger in flight with id "
                             + Id
                     );
-                } 
+                }
 
-                if (passenger.GetBaggageWeight() > MaxWeightPerBaggage)
+                if (passenger.GetBaggageWeight() > MaxBaggageWeightPerPassenger)
                 {
-                    return Result.Failure("Person with id " + passenger.Id + " carries weight above the limit " + MaxWeightPerBaggage);
+                    return Result.Failure(
+                        "Person with id "
+                            + passenger.Id
+                            + " carries weight above the limit "
+                            + MaxBaggageWeightPerPassenger
+                    );
                 }
 
                 foreach (var baggage in passenger.Baggages)
                 {
-                    var dimensions = baggage.Dimensions;
+                    totalWeigth += baggage.Weight;
 
-                    if (dimensions.Item1 > MaxBaggageDimensions.Item1 || dimensions.Item2 > MaxBaggageDimensions.Item2 || dimensions.Item3 > MaxBaggageDimensions.Item3)
+                    if (
+                        baggage.Width > MaxBaggageWidth
+                        || baggage.Height > MaxBaggageHeight
+                        || baggage.Length > MaxBaggageLength
+                    )
                     {
-                        return Result.Failure("The baggage with id " + baggage.Id + " of passeger with id " + passenger.Id + " has dimensions above the limit of " + MaxBaggageDimensions.Item1 + " - " + MaxBaggageDimensions.Item2 + " - " + MaxBaggageDimensions.Item3);
+                        return Result.Failure(
+                            "The baggage with id "
+                                + baggage.Id
+                                + " of passeger with id "
+                                + passenger.Id
+                                + " has dimensions above the limit of "
+                                + MaxBaggageWidth
+                                + " - "
+                                + MaxBaggageHeight
+                                + " - "
+                                + MaxBaggageLength
+                        );
+                    }
+
+                    if (baggage.Weight > MaxWeightPerBaggage)
+                    {
+                        return Result.Failure(
+                            "The baggage with id "
+                                + baggage.Id
+                                + " of passeger with id "
+                                + passenger.Id
+                                + " has weight above the limit of "
+                                + MaxWeightPerBaggage
+                        );
                     }
                 }
             }
 
+            if (totalWeigth > BaggageWeightCapacity)
+            {
+                return Result.Failure(
+                    "The baggage weight "
+                        + totalWeigth
+                        + " exceeds the limit "
+                        + BaggageWeightCapacity
+                );
+            }
 
-            passengers.ForEach(passenger => passenger.AttachToFlight(this);
+            passengers.ForEach(passenger => passenger.AttachToFlight(this));
             Passengers.AddRange(passengers);
             return Result.Success();
         }

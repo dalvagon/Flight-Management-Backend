@@ -1,6 +1,6 @@
-﻿using FlightManagement.Business.Helpers;
+﻿using FlightManagement.Domain.Helpers;
 
-namespace FlightManagement.Business.Entities
+namespace FlightManagement.Domain.Entities
 {
     public class Person
     {

@@ -1,4 +1,4 @@
-﻿namespace FlightManagement.Business.Entities
+﻿namespace FlightManagement.Domain.Entities
 {
     public class Company
     {
@@ -7,12 +7,11 @@
         public DateTime CreationDate { get; private set; }
         public List<Administrator> Administrators { get; private set; }
 
-        public Company(string name, DateTime creationDate, List<Administrator> administrators)
+        public Company(string name, DateTime creationDate)
         {
             Id = Guid.NewGuid();
             Name = name;
             CreationDate = creationDate;
-            Administrators = administrators;
         }
     }
 }

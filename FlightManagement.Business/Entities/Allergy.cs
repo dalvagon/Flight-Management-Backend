@@ -3,7 +3,7 @@
     public class Allergy
     {
         public Guid Id { get; private set; }
-        public String Name { get; private set; }
+        public string Name { get; private set; }
 
         public Allergy(string name)
         {

@@ -5,14 +5,22 @@
         public Guid Id { get; private set; }
         public Passenger Passenger { get; private set; }
         public double Weight { get; private set; }
-        public Tuple<double, double, double> Dimensions { get; private set; }
+        public double Width { get; private set; }
+        public double Height { get; private set; }
+        public double Length { get; private set; }
 
-        public Baggage(Passenger passenger, double weight, Tuple<double, double, double> dimensions)
+        public Baggage(double weight, double width, double height, double length)
         {
             Id = Guid.NewGuid();
-            Passenger = passenger;
             Weight = weight;
-            Dimensions = dimensions;
+            Width = width;
+            Height = height;
+            Length = length;
+        }
+
+        public void AttachBaggageToPassenger(Passenger passenger)
+        {
+            Passenger = passenger;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace FlightManagement.Business.Helpers
+﻿namespace FlightManagement.DOmain.Helpers
 {
     public class Result
     {
@@ -8,19 +8,12 @@
 
         public static Result Success()
         {
-            return new Result
-            {
-                IsSuccess = true
-            };
+            return new Result { IsSuccess = true };
         }
 
         public static Result Failure(string error)
         {
-            return new Result
-            {
-                Error = error,
-                IsFailure = true
-            };
+            return new Result { Error = error, IsFailure = true };
         }
     }
 }

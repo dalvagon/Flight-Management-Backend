@@ -1,4 +1,4 @@
-﻿namespace FlightManagement.Business.Entities
+﻿namespace FlightManagement.Domain.Entities
 {
     public enum Gender
     {
