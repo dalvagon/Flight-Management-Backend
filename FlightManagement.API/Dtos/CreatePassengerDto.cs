@@ -1,6 +1,4 @@
-﻿using FlightManagement.Domain.Entities;
-
-namespace FlightManagement.API.Dtos
+﻿namespace FlightManagement.API.Dtos
 {
     public class CreatePassengerDto
     {

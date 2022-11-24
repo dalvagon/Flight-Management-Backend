@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FlightManagement.Domain.Entities;
+﻿using FlightManagement.Domain.Entities;
 
 namespace FlightManagement.Infrastructure.Generics.GenericRepositories
 {

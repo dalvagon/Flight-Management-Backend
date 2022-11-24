@@ -21,6 +21,12 @@ namespace FlightManagement.API.Controllers
             this._passengerRepository = passengerRepository;
         }
 
+        [HttpGet]
+        public IActionResult All()
+        {
+            return Ok(_baggageRepository.All());
+        }
+
         [HttpGet("{baggageId:guid}")]
         public IActionResult Get(Guid baggageId)
         {

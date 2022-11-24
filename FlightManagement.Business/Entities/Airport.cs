@@ -1,4 +1,5 @@
-﻿using FlightManagement.Domain.Helpers;
+﻿using System.Text.Json.Serialization;
+using FlightManagement.Domain.Helpers;
 
 namespace FlightManagement.Domain.Entities
 {
@@ -9,7 +10,7 @@ namespace FlightManagement.Domain.Entities
         public Address Address { get; private set; }
         public string City { get; private set; }
 
-        public static Result<Airport> Create(string name, Address address, String city)
+        public static Result<Airport> Create(string name, Address address, string city)
         {
             return Result<Airport>.Success(
                 new Airport()

@@ -1,8 +1,6 @@
 ﻿using FlightManagement.API.Dtos;
 using FlightManagement.Domain.Entities;
 using FlightManagement.Infrastructure.Generics;
-using FlightManagement.Infrastructure.Generics.GenericRepositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManagement.API.Controllers

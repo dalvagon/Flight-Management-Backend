@@ -1,4 +1,5 @@
 ﻿using FlightManagement.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlightManagement.Infrastructure.Generics.GenericRepositories
 {
@@ -6,6 +7,16 @@ namespace FlightManagement.Infrastructure.Generics.GenericRepositories
     {
         public AirportRepository(DatabaseContext context) : base(context)
         {
+        }
+
+        public override Airport Get(Guid id)
+        {
+            return Context.Airports.Include(airport => airport.Address).FirstOrDefault();
+        }
+
+        public override IEnumerable<Airport> All()
+        {
+            return Context.Airports.Include(airport => airport.Address).ToList();
         }
     }
 }

@@ -5,7 +5,7 @@ namespace FlightManagement.API.IntegrationTests
 {
     public class BaseIntegrationTests<T> where T : class
     {
-        protected HttpClient HttpClient { get; private set; }
+        protected HttpClient HttpClient { get; }
 
         protected BaseIntegrationTests()
         {
