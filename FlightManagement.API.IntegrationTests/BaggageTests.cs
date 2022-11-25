@@ -13,7 +13,7 @@ namespace FlightManagement.API.IntegrationTests
         private const string ApiUrl = "/api/v1/baggages";
 
         [Fact]
-        public async Task When_CreateBaggage_Then_ShouldReturnBaggageAsync()
+        public void When_CreateBaggage_Then_ShouldReturnBaggage()
         {
             // Arrange
             var passenger = CreatePassengers()[0];
@@ -102,11 +102,13 @@ namespace FlightManagement.API.IntegrationTests
 
         private List<Person> CreatePersons()
         {
+            var address = CreateAddress1();
+
             return new List<Person>()
             {
-                Person.Create("John", "Doe", new DateTime(1998, 10, 11), "Male").Entity,
-                Person.Create("Al", "Pacino", new DateTime(2000, 1, 24), "Male").Entity,
-                Person.Create("Ina", "Jackson", new DateTime(1979, 5, 1), "Female").Entity,
+                Person.Create("John", "Doe", new DateTime(1998, 10, 11), "Male", address).Entity,
+                Person.Create("Al", "Pacino", new DateTime(2000, 1, 24), "Male", address).Entity,
+                Person.Create("Ina", "Jackson", new DateTime(1979, 5, 1), "Female", address).Entity,
             };
         }
     }

@@ -1,4 +1,6 @@
-﻿namespace FlightManagement.API.Features.Persons
+﻿using FlightManagement.API.Dtos;
+
+namespace FlightManagement.API.Features.Persons
 {
     public class CreatePersonDto
     {
@@ -7,5 +9,6 @@
         public int Age { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Gender { get; set; }
+        public CreateAddressDto AddressDto { get; set; }
     }
 }

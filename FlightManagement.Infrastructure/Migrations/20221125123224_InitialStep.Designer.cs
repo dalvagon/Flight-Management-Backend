@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlightManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20221123172944_InitialStep")]
+    [Migration("20221125123224_InitialStep")]
     partial class InitialStep
     {
         /// <inheritdoc />
@@ -161,14 +161,6 @@ namespace FlightManagement.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Companies");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("2b1be837-365f-45af-ab91-abf541a7f631"),
-                            CreationDate = new DateTime(1998, 12, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Atlas"
-                        });
                 });
 
             modelBuilder.Entity("FlightManagement.Domain.Entities.Flight", b =>
@@ -249,6 +241,9 @@ namespace FlightManagement.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("AddressId")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("TEXT");
 
@@ -265,25 +260,9 @@ namespace FlightManagement.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("People");
+                    b.HasIndex("AddressId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("65aba6e9-4b73-4ac1-83ee-851c6477d41c"),
-                            DateOfBirth = new DateTime(2002, 6, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Gender = 0,
-                            Name = "Leahu",
-                            Surname = "Vlad"
-                        },
-                        new
-                        {
-                            Id = new Guid("5c311eee-ccaa-4653-92c2-c5cc4ffbc6d0"),
-                            DateOfBirth = new DateTime(1985, 4, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Gender = 0,
-                            Name = "Ion",
-                            Surname = "Titi"
-                        });
+                    b.ToTable("People");
                 });
 
             modelBuilder.Entity("FlightManagement.Domain.Entities.Administrator", b =>
@@ -374,6 +353,17 @@ namespace FlightManagement.Infrastructure.Migrations
                     b.Navigation("Flight");
 
                     b.Navigation("Person");
+                });
+
+            modelBuilder.Entity("FlightManagement.Domain.Entities.Person", b =>
+                {
+                    b.HasOne("FlightManagement.Domain.Entities.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
                 });
 
             modelBuilder.Entity("FlightManagement.Domain.Entities.Company", b =>

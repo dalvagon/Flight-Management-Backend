@@ -37,9 +37,9 @@ namespace FlightManagement.Business.Tests
                 .Should()
                 .Be(
                     "Person with id "
-                        + passengers[0].Id
-                        + " is already a passenger in flight with id "
-                        + flight.Id
+                    + passengers[0].Id
+                    + " is already a passenger in flight with id "
+                    + flight.Id
                 );
         }
 
@@ -69,15 +69,15 @@ namespace FlightManagement.Business.Tests
                 .Should()
                 .Be(
                     "The baggage with id "
-                        + passenger.Baggages[0].Id
-                        + " of passeger with id "
-                        + passenger.Id
-                        + " has dimensions above the limit of "
-                        + flight.MaxBaggageWidth
-                        + " - "
-                        + flight.MaxBaggageHeight
-                        + " - "
-                        + flight.MaxBaggageLength
+                    + passenger.Baggages[0].Id
+                    + " of passeger with id "
+                    + passenger.Id
+                    + " has dimensions above the limit of "
+                    + flight.MaxBaggageWidth
+                    + " - "
+                    + flight.MaxBaggageHeight
+                    + " - "
+                    + flight.MaxBaggageLength
                 );
         }
 
@@ -107,9 +107,9 @@ namespace FlightManagement.Business.Tests
                 .Should()
                 .Be(
                     "Person with id "
-                        + passenger.Id
-                        + " carries weight above the limit "
-                        + flight.MaxBaggageWeightPerPassenger
+                    + passenger.Id
+                    + " carries weight above the limit "
+                    + flight.MaxBaggageWeightPerPassenger
                 );
         }
 
@@ -139,11 +139,11 @@ namespace FlightManagement.Business.Tests
                 .Should()
                 .Be(
                     "The baggage with id "
-                        + passenger.Baggages[0].Id
-                        + " of passeger with id "
-                        + passenger.Id
-                        + " has weight above the limit of "
-                        + flight.MaxWeightPerBaggage
+                    + passenger.Baggages[0].Id
+                    + " of passenger with id "
+                    + passenger.Id
+                    + " has weight above the limit of "
+                    + flight.MaxWeightPerBaggage
                 );
         }
 
@@ -201,11 +201,13 @@ namespace FlightManagement.Business.Tests
 
         private List<Person> CreatePersons()
         {
+            var address = CreateAddress1();
+
             return new List<Person>()
             {
-                Person.Create("John", "Doe", new DateTime(1998, 10, 11), "Male").Entity,
-                Person.Create("Al", "Pacino", new DateTime(2000, 1, 24), "Male").Entity,
-                Person.Create("Ina", "Jackson", new DateTime(1979, 5, 1), "Female").Entity,
+                Person.Create("John", "Doe", new DateTime(1998, 10, 11), "Male", address).Entity,
+                Person.Create("Al", "Pacino", new DateTime(2000, 1, 24), "Male", address).Entity,
+                Person.Create("Ina", "Jackson", new DateTime(1979, 5, 1), "Female", address).Entity,
             };
         }
     }

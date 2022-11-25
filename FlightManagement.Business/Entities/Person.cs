@@ -9,12 +9,14 @@ namespace FlightManagement.Domain.Entities
         public string Surname { get; private set; }
         public DateTime DateOfBirth { get; private set; }
         public Gender Gender { get; private set; }
+        public Address Address { get; private set; }
 
         public static Result<Person> Create(
             string name,
             string surname,
             DateTime dateOfBirth,
-            string gender
+            string gender,
+            Address address
         )
         {
             if (!Enum.TryParse<Gender>(gender, out var personGender))
@@ -33,7 +35,8 @@ namespace FlightManagement.Domain.Entities
                 Name = name,
                 Surname = surname,
                 DateOfBirth = dateOfBirth,
-                Gender = personGender
+                Gender = personGender,
+                Address = address
             };
 
             return Result<Person>.Success(person);

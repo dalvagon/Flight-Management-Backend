@@ -63,9 +63,9 @@ namespace FlightManagement.Domain.Entities
                 {
                     return Result.Failure(
                         "Person with id "
-                            + passenger.Id
-                            + " is already a passenger in flight with id "
-                            + Id
+                        + passenger.Id
+                        + " is already a passenger in flight with id "
+                        + Id
                     );
                 }
 
@@ -73,9 +73,9 @@ namespace FlightManagement.Domain.Entities
                 {
                     return Result.Failure(
                         "Person with id "
-                            + passenger.Id
-                            + " carries weight above the limit "
-                            + MaxBaggageWeightPerPassenger
+                        + passenger.Id
+                        + " carries weight above the limit "
+                        + MaxBaggageWeightPerPassenger
                     );
                 }
 
@@ -91,15 +91,15 @@ namespace FlightManagement.Domain.Entities
                     {
                         return Result.Failure(
                             "The baggage with id "
-                                + baggage.Id
-                                + " of passeger with id "
-                                + passenger.Id
-                                + " has dimensions above the limit of "
-                                + MaxBaggageWidth
-                                + " - "
-                                + MaxBaggageHeight
-                                + " - "
-                                + MaxBaggageLength
+                            + baggage.Id
+                            + " of passeger with id "
+                            + passenger.Id
+                            + " has dimensions above the limit of "
+                            + MaxBaggageWidth
+                            + " - "
+                            + MaxBaggageHeight
+                            + " - "
+                            + MaxBaggageLength
                         );
                     }
 
@@ -107,11 +107,11 @@ namespace FlightManagement.Domain.Entities
                     {
                         return Result.Failure(
                             "The baggage with id "
-                                + baggage.Id
-                                + " of passeger with id "
-                                + passenger.Id
-                                + " has weight above the limit of "
-                                + MaxWeightPerBaggage
+                            + baggage.Id
+                            + " of passenger with id "
+                            + passenger.Id
+                            + " has weight above the limit of "
+                            + MaxWeightPerBaggage
                         );
                     }
                 }
@@ -121,9 +121,9 @@ namespace FlightManagement.Domain.Entities
             {
                 return Result.Failure(
                     "The baggage weight "
-                        + totalWeigth
-                        + " exceeds the limit "
-                        + BaggageWeightCapacity
+                    + totalWeigth
+                    + " exceeds the limit "
+                    + BaggageWeightCapacity
                 );
             }
 

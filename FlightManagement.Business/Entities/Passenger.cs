@@ -13,15 +13,17 @@ namespace FlightManagement.Domain.Entities
 
         public static Result<Passenger> Create(Person person, Flight flight, double weight)
         {
-            return Result<Passenger>.Success(
-                new Passenger()
-                {
-                    Id = Guid.NewGuid(),
-                    Person = person,
-                    Flight = flight,
-                    Weight = weight
-                }
-            );
+            var passenger = new Passenger()
+            {
+                Id = Guid.NewGuid(),
+                Person = person,
+                Flight = flight,
+                Weight = weight
+            };
+
+            flight.AttachPassengersToFlight(new List<Passenger> { passenger });
+
+            return Result<Passenger>.Success(passenger);
         }
 
         public void AttachToFlight(Flight flight)

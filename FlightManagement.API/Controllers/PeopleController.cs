@@ -10,10 +10,12 @@ namespace FlightManagement.API.Controllers
     public class PeopleController : ControllerBase
     {
         private readonly IRepository<Person> _personRepository;
+        private readonly IRepository<Address> _addressRepository;
 
-        public PeopleController(IRepository<Person> personRepository)
+        public PeopleController(IRepository<Person> personRepository, IRepository<Address> addressRepository)
         {
-            this._personRepository = personRepository;
+            _personRepository = personRepository;
+            _addressRepository = addressRepository;
         }
 
         [HttpGet]
@@ -31,8 +33,14 @@ namespace FlightManagement.API.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] CreatePersonDto dto)
         {
+            var address = new Address(dto.AddressDto.Number, dto.AddressDto.Street, dto.AddressDto.City,
+                dto.AddressDto.Country);
+
+            _addressRepository.Add(address);
+            _addressRepository.SaveChanges();
+
             Person person = Person
-                .Create(dto.Name, dto.Surname, dto.DateOfBirth, dto.Gender)
+                .Create(dto.Name, dto.Surname, dto.DateOfBirth, dto.Gender, address)
                 .Entity;
 
             _personRepository.Add(person);

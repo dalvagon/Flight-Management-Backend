@@ -18,7 +18,6 @@ namespace FlightManagement.API.IntegrationTests
         private void CleanDatabases()
         {
             var databaseContext = new DatabaseContext();
-            databaseContext.Addresses.RemoveRange(databaseContext.Addresses);
             databaseContext.Administrators.RemoveRange(databaseContext.Administrators);
             databaseContext.Airports.RemoveRange(databaseContext.Airports);
             databaseContext.Baggages.RemoveRange(databaseContext.Baggages);

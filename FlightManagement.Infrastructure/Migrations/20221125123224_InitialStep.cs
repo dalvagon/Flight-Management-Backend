@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace FlightManagement.Infrastructure.Migrations
 {
     /// <inheritdoc />
@@ -49,11 +47,18 @@ namespace FlightManagement.Infrastructure.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Surname = table.Column<string>(type: "TEXT", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Gender = table.Column<int>(type: "INTEGER", nullable: false)
+                    Gender = table.Column<int>(type: "INTEGER", nullable: false),
+                    AddressId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_People", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_People_Addresses_AddressId",
+                        column: x => x.AddressId,
+                        principalTable: "Addresses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -202,20 +207,6 @@ namespace FlightManagement.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Companies",
-                columns: new[] { "Id", "CreationDate", "Name" },
-                values: new object[] { new Guid("2b1be837-365f-45af-ab91-abf541a7f631"), new DateTime(1998, 12, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Atlas" });
-
-            migrationBuilder.InsertData(
-                table: "People",
-                columns: new[] { "Id", "DateOfBirth", "Gender", "Name", "Surname" },
-                values: new object[,]
-                {
-                    { new Guid("5c311eee-ccaa-4653-92c2-c5cc4ffbc6d0"), new DateTime(1985, 4, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, "Ion", "Titi" },
-                    { new Guid("65aba6e9-4b73-4ac1-83ee-851c6477d41c"), new DateTime(2002, 6, 24, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, "Leahu", "Vlad" }
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Administrators_CompanyId",
                 table: "Administrators",
@@ -265,6 +256,11 @@ namespace FlightManagement.Infrastructure.Migrations
                 name: "IX_Passengers_PersonId",
                 table: "Passengers",
                 column: "PersonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_People_AddressId",
+                table: "People",
+                column: "AddressId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Airports_Flights_FlightId",
