@@ -12,7 +12,7 @@ namespace FlightManagement.API.Controllers
 
         public CompanyController(IRepository<Company> companyRepository)
         {
-            this._companyRepository = companyRepository;
+            _companyRepository = companyRepository;
         }
 
         [HttpGet]

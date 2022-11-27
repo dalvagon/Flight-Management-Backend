@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlightManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20221125123224_InitialStep")]
+    [Migration("20221127155125_InitialStep")]
     partial class InitialStep
     {
         /// <inheritdoc />

@@ -11,7 +11,9 @@ namespace FlightManagement.Infrastructure.Generics.GenericRepositories
 
         public override Airport Get(Guid id)
         {
-            return Context.Airports.Include(airport => airport.Address).FirstOrDefault();
+            return Context.Airports.Include(airport => airport.Address)
+                .Where(a => a.Id == id)
+                .FirstOrDefault();
         }
 
         public override IEnumerable<Airport> All()

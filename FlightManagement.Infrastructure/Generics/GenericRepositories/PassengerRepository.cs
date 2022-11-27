@@ -15,6 +15,7 @@ namespace FlightManagement.Infrastructure.Generics.GenericRepositories
                 .Include(p => p.Flight)
                 .Include(p => p.Allergies)
                 .Include(p => p.Baggages)
+                .Where(p => p.Id == id)
                 .FirstOrDefault();
         }
 

@@ -1,5 +1,4 @@
-﻿using FlightManagement.API.Dtos;
-using FlightManagement.Domain.Entities;
+﻿using FlightManagement.Domain.Entities;
 using FlightManagement.Infrastructure.Generics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,8 +16,8 @@ namespace FlightManagement.API.Controllers
             IRepository<Passenger> passengerRepository
         )
         {
-            this._baggageRepository = baggageRepository;
-            this._passengerRepository = passengerRepository;
+            _baggageRepository = baggageRepository;
+            _passengerRepository = passengerRepository;
         }
 
         [HttpGet]
@@ -31,19 +30,6 @@ namespace FlightManagement.API.Controllers
         public IActionResult Get(Guid baggageId)
         {
             return Ok(_baggageRepository.Get(baggageId));
-        }
-
-        [HttpPost]
-        public IActionResult Add([FromBody] CreateBaggageDto dto)
-        {
-            var baggage = new Baggage(dto.Weight, dto.Width, dto.Height, dto.Length);
-            var passenger = _passengerRepository.Get(dto.PassengerId);
-            baggage.AttachBaggageToPassenger(passenger);
-
-            _baggageRepository.Add(baggage);
-            _baggageRepository.SaveChanges();
-
-            return Created(nameof(Get), baggage);
         }
     }
 }

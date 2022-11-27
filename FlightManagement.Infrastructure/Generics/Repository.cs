@@ -8,7 +8,7 @@ namespace FlightManagement.Infrastructure.Generics
 
         public Repository(DatabaseContext context)
         {
-            this.Context = context;
+            Context = context;
         }
 
         public virtual T Add(T entity)
@@ -36,9 +36,9 @@ namespace FlightManagement.Infrastructure.Generics
             return Context.Update(entity).Entity;
         }
 
-        public virtual void Delete(Guid id)
+        public virtual void Delete(T entity)
         {
-            Context.Remove(id);
+            Context.Remove(entity);
         }
 
         public void SaveChanges()

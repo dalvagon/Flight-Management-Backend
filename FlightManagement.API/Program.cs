@@ -2,12 +2,13 @@ using FlightManagement.Domain.Entities;
 using FlightManagement.Infrastructure;
 using FlightManagement.Infrastructure.Generics;
 using FlightManagement.Infrastructure.Generics.GenericRepositories;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
-    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore
 );
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -20,7 +21,7 @@ builder.Services.AddScoped<IRepository<Airport>, AirportRepository>();
 builder.Services.AddScoped<IRepository<Allergy>, AllergyRepository>();
 builder.Services.AddScoped<IRepository<Baggage>, BaggageRepository>();
 builder.Services.AddScoped<IRepository<Company>, CompanyRepository>();
-builder.Services.AddScoped<IRepository<Flight>, FLightRepository>();
+builder.Services.AddScoped<IRepository<Flight>, FlightRepository>();
 builder.Services.AddScoped<IRepository<Passenger>, PassengerRepository>();
 builder.Services.AddScoped<IRepository<Person>, PersonRepository>();
 

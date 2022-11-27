@@ -18,13 +18,15 @@ namespace FlightManagement.API.IntegrationTests
         private void CleanDatabases()
         {
             var databaseContext = new DatabaseContext();
-            databaseContext.Administrators.RemoveRange(databaseContext.Administrators);
-            databaseContext.Airports.RemoveRange(databaseContext.Airports);
-            databaseContext.Baggages.RemoveRange(databaseContext.Baggages);
-            databaseContext.Companies.RemoveRange(databaseContext.Companies);
-            databaseContext.Flights.RemoveRange(databaseContext.Flights);
-            databaseContext.Passengers.RemoveRange(databaseContext.Passengers);
-            databaseContext.People.RemoveRange(databaseContext.People);
+            //databaseContext.People.RemoveRange(databaseContext.People);
+            //databaseContext.Addresses.RemoveRange(databaseContext.Addresses);
+            //databaseContext.Administrators.RemoveRange(databaseContext.Administrators);
+            //databaseContext.Airports.RemoveRange(databaseContext.Airports);
+            //databaseContext.Allergies.RemoveRange(databaseContext.Allergies);
+            //databaseContext.Baggages.RemoveRange(databaseContext.Baggages);
+            //databaseContext.Companies.RemoveRange(databaseContext.Companies);
+            //databaseContext.Flights.RemoveRange(databaseContext.Flights);
+            //databaseContext.Passengers.RemoveRange(databaseContext.Passengers);
 
             databaseContext.SaveChanges();
         }

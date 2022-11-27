@@ -11,7 +11,7 @@ namespace FlightManagement.Domain.Entities
         public static Result<Administrator> Create(Company company, Person person)
         {
             return Result<Administrator>.Success(
-                new Administrator()
+                new Administrator
                 {
                     Id = Guid.NewGuid(),
                     Company = company,

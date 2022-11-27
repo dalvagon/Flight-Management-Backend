@@ -17,8 +17,8 @@ namespace FlightManagement.API.Controllers
             IRepository<Airport> airpotRepository
         )
         {
-            this._flightRepository = flightRepository;
-            this._airpotRepository = airpotRepository;
+            _flightRepository = flightRepository;
+            _airpotRepository = airpotRepository;
         }
 
         [HttpGet]
@@ -36,10 +36,9 @@ namespace FlightManagement.API.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] CreateFlightDto dto)
         {
-            var departureAirpost = _airpotRepository.Get(dto.DepartureAirportId);
+            var departureAirport = _airpotRepository.Get(dto.DepartureAirportId);
             var destinationAirport = _airpotRepository.Get(dto.DestinationAirportId);
-
-            var flight = Flight
+            var result = Flight
                 .Create(
                     dto.DepartureDate,
                     dto.ArrivalDate,
@@ -50,15 +49,20 @@ namespace FlightManagement.API.Controllers
                     dto.MaxBaggageWidth,
                     dto.MaxBaggageHeight,
                     dto.MaxBaggageLength,
-                    departureAirpost,
+                    departureAirport,
                     destinationAirport
-                )
-                .Entity;
+                );
 
-            var result = _flightRepository.Add(flight);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+
+            var flight = result.Entity;
+            _flightRepository.Add(flight);
             _flightRepository.SaveChanges();
 
-            return Created(nameof(All), result);
+            return Created(nameof(All), flight);
         }
 
         [HttpPatch("{flightId:guid}/delay")]

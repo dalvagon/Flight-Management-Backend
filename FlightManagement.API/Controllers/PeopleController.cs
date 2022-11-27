@@ -35,14 +35,15 @@ namespace FlightManagement.API.Controllers
         {
             var address = new Address(dto.AddressDto.Number, dto.AddressDto.Street, dto.AddressDto.City,
                 dto.AddressDto.Country);
+            var result = Person.Create(dto.Name, dto.Surname, dto.DateOfBirth, dto.Gender, address);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
 
+            Person person = result.Entity;
             _addressRepository.Add(address);
             _addressRepository.SaveChanges();
-
-            Person person = Person
-                .Create(dto.Name, dto.Surname, dto.DateOfBirth, dto.Gender, address)
-                .Entity;
-
             _personRepository.Add(person);
             _personRepository.SaveChanges();
 
@@ -52,7 +53,9 @@ namespace FlightManagement.API.Controllers
         [HttpDelete("{personId:guid}")]
         public IActionResult Delete(Guid personId)
         {
-            _personRepository.Delete(personId);
+            var person = _personRepository.Get(personId);
+
+            _personRepository.Delete(person);
             _personRepository.SaveChanges();
 
             return NoContent();
