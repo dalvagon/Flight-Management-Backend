@@ -91,5 +91,15 @@ namespace FlightManagement.API.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("{flightId:guid}")]
+        public IActionResult Remove(Guid flightId)
+        {
+            var flight = _flightRepository.Get(flightId);
+            _flightRepository.Delete(flight);
+            _flightRepository.SaveChanges();
+
+            return NoContent();
+        }
     }
 }

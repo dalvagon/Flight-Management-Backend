@@ -1,5 +1,6 @@
 using FlightManagement.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlightManagement.API.IntegrationTests
 {
@@ -17,18 +18,12 @@ namespace FlightManagement.API.IntegrationTests
 
         private void CleanDatabases()
         {
-            var databaseContext = new DatabaseContext();
-            //databaseContext.People.RemoveRange(databaseContext.People);
-            //databaseContext.Addresses.RemoveRange(databaseContext.Addresses);
-            //databaseContext.Administrators.RemoveRange(databaseContext.Administrators);
-            //databaseContext.Airports.RemoveRange(databaseContext.Airports);
-            //databaseContext.Allergies.RemoveRange(databaseContext.Allergies);
-            //databaseContext.Baggages.RemoveRange(databaseContext.Baggages);
-            //databaseContext.Companies.RemoveRange(databaseContext.Companies);
-            //databaseContext.Flights.RemoveRange(databaseContext.Flights);
-            //databaseContext.Passengers.RemoveRange(databaseContext.Passengers);
+            var options = new DbContextOptionsBuilder<DatabaseContext>()
+                .UseSqlite("Data Source = FlightManagementTests.db").Options;
 
-            databaseContext.SaveChanges();
+            var databaseContext = new DatabaseContext(options);
+
+            databaseContext.Database.EnsureDeleted();
         }
     }
 }

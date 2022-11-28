@@ -15,14 +15,13 @@ namespace FlightManagement.Infrastructure
         public DbSet<Passenger> Passengers { get; private set; }
         public DbSet<Person> People { get; private set; }
 
-        public DatabaseContext()
+        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
-            Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Data Source = FlightManagement.db");
+            //optionsBuilder.UseSqlite("Data Source = FlightManagement.db");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

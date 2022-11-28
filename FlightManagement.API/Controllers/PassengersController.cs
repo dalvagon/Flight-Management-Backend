@@ -32,6 +32,14 @@ namespace FlightManagement.API.Controllers
             return Ok(_passengerRepository.All());
         }
 
+        [HttpGet("byFlight")]
+        public IActionResult AllForFlight([FromQuery] Guid flightId)
+        {
+            var passengers = _passengerRepository.All();
+
+            return Ok(passengers.Where(p => p.Flight.Id == flightId));
+        }
+
         [HttpGet("{passengerId:guid}")]
         public IActionResult Get(Guid passengerId)
         {
