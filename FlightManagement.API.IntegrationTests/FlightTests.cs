@@ -87,6 +87,37 @@ namespace FlightManagement.API.IntegrationTests
                 $"The arrival date {dto.ArrivalDate} for the flight is past the departure date {dto.DepartureDate}");
         }
 
+
+        [Fact]
+        public async Task
+            When_CreateFlightWithTheMaxBaggageWeightPerPersonGreaterThanTheBaggageWeightCapacityDividedByThePassengerCapacity_Then_ShouldReturnBadRequestAsync()
+        {
+            // Arrange
+            var flight = CreateFlight();
+            var dto = new CreateFlightDto
+            {
+                DepartureDate = flight.DepartureDate,
+                ArrivalDate = flight.ArrivalDate,
+                PassengerCapacity = 100,
+                BaggageWeightCapacity = 10000,
+                MaxWeightPerBaggage = flight.MaxWeightPerBaggage,
+                MaxBaggageWeightPerPassenger = 101,
+                MaxBaggageWidth = flight.MaxBaggageWidth,
+                MaxBaggageHeight = flight.MaxBaggageHeight,
+                MaxBaggageLength = flight.MaxBaggageLength,
+                DepartureAirportId = flight.DepartureAirport.Id,
+                DestinationAirportId = flight.DestinationAirport.Id
+            };
+
+            // Act
+            var response = await HttpClient.PostAsJsonAsync(ApiUrl, dto);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.Content.ReadAsStringAsync().Result.Should().Be(
+                $"The maximum baggage weight per passenger ({101}) shouldn't be greater than the baggage capacity ({10000}) divided by the maximum number of passengers ({100})");
+        }
+
         private List<Passenger> CreatePassengers()
         {
             var persons = CreatePersons();

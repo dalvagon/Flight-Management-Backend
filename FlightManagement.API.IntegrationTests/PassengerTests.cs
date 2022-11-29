@@ -20,14 +20,12 @@ namespace FlightManagement.API.IntegrationTests
             var personRepositoryMock = new Mock<IRepository<Person>>();
             var flightRepositoryMock = new Mock<IRepository<Flight>>();
             var allergyRepositoryMock = new Mock<IRepository<Allergy>>();
-            var baggageRepositoryMock = new Mock<IRepository<Baggage>>();
             var flight = CreateFlight();
             var person = CreatePersons()[0];
             var baggages = CreateBaggages();
 
             var passengersController = new PassengersController(passengerRepositoryMock.Object,
-                personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object,
-                baggageRepositoryMock.Object);
+                personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object);
 
             flightRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
                 .Returns(flight);
@@ -68,7 +66,6 @@ namespace FlightManagement.API.IntegrationTests
             var personRepositoryMock = new Mock<IRepository<Person>>();
             var flightRepositoryMock = new Mock<IRepository<Flight>>();
             var allergyRepositoryMock = new Mock<IRepository<Allergy>>();
-            var baggageRepositoryMock = new Mock<IRepository<Baggage>>();
             var flight = CreateFlight();
             var person = CreatePersons()[0];
             var baggages = new List<Baggage>
@@ -79,8 +76,7 @@ namespace FlightManagement.API.IntegrationTests
             };
 
             var passengersController = new PassengersController(passengerRepositoryMock.Object,
-                personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object,
-                baggageRepositoryMock.Object);
+                personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object);
 
             flightRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
                 .Returns(flight);
@@ -118,14 +114,12 @@ namespace FlightManagement.API.IntegrationTests
             var personRepositoryMock = new Mock<IRepository<Person>>();
             var flightRepositoryMock = new Mock<IRepository<Flight>>();
             var allergyRepositoryMock = new Mock<IRepository<Allergy>>();
-            var baggageRepositoryMock = new Mock<IRepository<Baggage>>();
             var flight = CreateFlight();
             var person = CreatePersons()[0];
             var baggages = CreateBaggages();
 
             var passengersController = new PassengersController(passengerRepositoryMock.Object,
-                personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object,
-                baggageRepositoryMock.Object);
+                personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object);
 
             flightRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
                 .Returns(flight);
@@ -166,7 +160,6 @@ namespace FlightManagement.API.IntegrationTests
             var personRepositoryMock = new Mock<IRepository<Person>>();
             var flightRepositoryMock = new Mock<IRepository<Flight>>();
             var allergyRepositoryMock = new Mock<IRepository<Allergy>>();
-            var baggageRepositoryMock = new Mock<IRepository<Baggage>>();
             var flight = CreateFlight();
             var person = CreatePersons()[0];
             var baggages = new List<Baggage>
@@ -177,8 +170,7 @@ namespace FlightManagement.API.IntegrationTests
             };
 
             var passengersController = new PassengersController(passengerRepositoryMock.Object,
-                personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object,
-                baggageRepositoryMock.Object);
+                personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object);
 
             flightRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
                 .Returns(flight);
@@ -217,7 +209,6 @@ namespace FlightManagement.API.IntegrationTests
             var personRepositoryMock = new Mock<IRepository<Person>>();
             var flightRepositoryMock = new Mock<IRepository<Flight>>();
             var allergyRepositoryMock = new Mock<IRepository<Allergy>>();
-            var baggageRepositoryMock = new Mock<IRepository<Baggage>>();
             var flight = CreateFlight();
             var person = CreatePersons()[0];
             var baggages = new List<Baggage>
@@ -228,8 +219,7 @@ namespace FlightManagement.API.IntegrationTests
             };
 
             var passengersController = new PassengersController(passengerRepositoryMock.Object,
-                personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object,
-                baggageRepositoryMock.Object);
+                personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object);
 
             flightRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
                 .Returns(flight);

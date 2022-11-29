@@ -39,6 +39,12 @@ namespace FlightManagement.Domain.Entities
                     $"The arrival date {arrivalDate} for the flight is past the departure date {departureDate}");
             }
 
+            if (baggageWeightCapacity / passengerCapacity < maxBaggageWeightPerPassenger)
+            {
+                return Result<Flight>.Failure(
+                    $"The maximum baggage weight per passenger ({maxBaggageWeightPerPassenger}) shouldn't be greater than the baggage capacity ({baggageWeightCapacity}) divided by the maximum number of passengers ({passengerCapacity})");
+            }
+
             return Result<Flight>.Success(
                 new Flight
                 {
@@ -61,6 +67,11 @@ namespace FlightManagement.Domain.Entities
         public Result<Passenger> AttachPassengerToFlight(Passenger passenger)
         {
             var people = Passengers.Select(p => p.Person);
+
+            if (Passengers.Count == PassengerCapacity)
+            {
+                return Result<Passenger>.Failure($"There aren't any seats left on flight with id {Id}");
+            }
 
             if (people.Contains(passenger.Person))
             {

@@ -13,17 +13,14 @@ namespace FlightManagement.API.Controllers
         private readonly IRepository<Person> _personRepository;
         private readonly IRepository<Flight> _flightRepository;
         private readonly IRepository<Allergy> _allergyRepository;
-        private readonly IRepository<Baggage> _baggageRepository;
 
         public PassengersController(IRepository<Passenger> passengerRepository, IRepository<Person> personRepository,
-            IRepository<Flight> flightRepository, IRepository<Allergy> allergyRepository,
-            IRepository<Baggage> baggageRepository)
+            IRepository<Flight> flightRepository, IRepository<Allergy> allergyRepository)
         {
             _passengerRepository = passengerRepository;
             _personRepository = personRepository;
             _flightRepository = flightRepository;
             _allergyRepository = allergyRepository;
-            _baggageRepository = baggageRepository;
         }
 
         [HttpGet]
