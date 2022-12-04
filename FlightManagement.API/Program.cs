@@ -16,9 +16,6 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//builder.Services.AddScoped<DatabaseContext>();
-
-builder.Services.AddScoped<DatabaseContext>();
 
 builder.Services.AddDbContext<DatabaseContext>(
     options => options.UseSqlite(

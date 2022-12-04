@@ -1,0 +1,10 @@
+_
+VC:\Users\leahu\Desktop\FlightManagement\FlightManagement.Business.Tests\FlightsTest.csutf-8Z
+QC:\Users\leahu\Desktop\FlightManagement\FlightManagement.Business.Tests\Usings.csutf-8}
+rC:\Users\leahu\.nuget\packages\microsoft.net.test.sdk\17.4.0\build\netcoreapp3.1\Microsoft.NET.Test.Sdk.Program.csutf-8–
+ŠC:\Users\leahu\Desktop\FlightManagement\FlightManagement.Business.Tests\obj\Debug\net7.0\FlightManagement.Business.Tests.GlobalUsings.g.csutf-8“
+‡C:\Users\leahu\Desktop\FlightManagement\FlightManagement.Business.Tests\obj\Debug\net7.0\.NETCoreApp,Version=v7.0.AssemblyAttributes.csutf-8”
+ˆC:\Users\leahu\Desktop\FlightManagement\FlightManagement.Business.Tests\obj\Debug\net7.0\FlightManagement.Business.Tests.AssemblyInfo.csutf-8w
+lMicrosoft.Interop.JavaScript.JSImportGenerator\Microsoft.Interop.JavaScript.JSExportGenerator\JSExports.g.csutf-8w
+lMicrosoft.Interop.JavaScript.JSImportGenerator\Microsoft.Interop.JavaScript.JSImportGenerator\JSImports.g.csutf-8p
+eMicrosoft.Interop.LibraryImportGenerator\Microsoft.Interop.LibraryImportGenerator\LibraryImports.g.csutf-8

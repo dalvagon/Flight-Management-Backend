@@ -17,15 +17,7 @@ namespace FlightManagement.Infrastructure
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            //optionsBuilder.UseSqlite("Data Source = FlightManagement.db");
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+            Database.EnsureCreated();
         }
     }
 }
