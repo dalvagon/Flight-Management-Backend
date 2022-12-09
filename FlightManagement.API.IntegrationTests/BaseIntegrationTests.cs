@@ -1,3 +1,4 @@
+using FlightManagement.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 
@@ -6,6 +7,7 @@ namespace FlightManagement.API.IntegrationTests
     public class BaseIntegrationTests<T> where T : class
     {
         protected HttpClient HttpClient { get; }
+        protected DatabaseContext Context { get; }
         private readonly TestServer _server;
 
         protected BaseIntegrationTests()
@@ -38,6 +40,7 @@ namespace FlightManagement.API.IntegrationTests
             _server = new TestServer(new WebHostBuilder()
                 .UseStartup<Startup<T>>());
             HttpClient = _server.CreateClient();
+            Context = (DatabaseContext?)_server.Services.GetService(typeof(DatabaseContext));
         }
     }
 }

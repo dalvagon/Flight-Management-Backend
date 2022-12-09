@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Data.Sqlite;
 using System.Data.Common;
+using Newtonsoft.Json;
 
 namespace FlightManagement.API.IntegrationTests
 {
@@ -19,6 +20,10 @@ namespace FlightManagement.API.IntegrationTests
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddMvc().AddApplicationPart(typeof(T).Assembly);
+
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            );
 
             services.AddSingleton<DbConnection>(container =>
             {

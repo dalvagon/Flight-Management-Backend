@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System.Net;
+using System.Net.Http.Json;
 
 namespace FlightManagement.API.IntegrationTests
 {
@@ -251,6 +252,34 @@ namespace FlightManagement.API.IntegrationTests
                     $"Person with id {person.Id} carries a baggage that has dimensions above the limit of {flight.MaxBaggageWidth} - {flight.MaxBaggageHeight} - {flight.MaxBaggageLength}");
         }
 
+        [Fact]
+        public async Task When_GetPassenger_Then_ShouldReturnPassenger()
+        {
+            // Arrange
+            var passenger = CreatePassengers()[0];
+            Context.Passengers.Add(passenger);
+            Context.SaveChanges();
+
+            // Act
+            var responseMessage = await HttpClient.GetAsync(ApiUrl);
+            var response = await responseMessage.Content.ReadFromJsonAsync<List<Passenger>>();
+
+            // Assert
+            responseMessage.EnsureSuccessStatusCode();
+            response.Count.Should().Be(1);
+        }
+
+        private List<Passenger> CreatePassengers()
+        {
+            var persons = CreatePersons();
+            var flight = CreateFlight();
+
+            var passengers = persons.Select(person =>
+                Passenger.Create(person, flight, 80, CreateBaggages(), new List<Allergy>()).Entity).ToList();
+
+            return passengers;
+        }
+
         private List<Baggage> CreateBaggages()
         {
             return new List<Baggage>
@@ -308,8 +337,6 @@ namespace FlightManagement.API.IntegrationTests
             return new List<Person>
             {
                 Person.Create("John", "Doe", new DateTime(1998, 10, 11), "Male", address).Entity,
-                Person.Create("Al", "Pacino", new DateTime(2000, 1, 24), "Male", address).Entity,
-                Person.Create("Ina", "Jackson", new DateTime(1979, 5, 1), "Female", address).Entity,
             };
         }
     }

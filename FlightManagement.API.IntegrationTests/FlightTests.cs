@@ -12,7 +12,7 @@ namespace FlightManagement.API.IntegrationTests
 {
     public class FlightTests : BaseIntegrationTests<FlightsController>
     {
-        private const string ApiUrl = "/api/v1/flights";
+        private const string ApiUrl = "/api/v1/flights/";
 
         [Fact]
         public void When_CreateFlight_Then_ShouldReturnFlight()
@@ -84,7 +84,7 @@ namespace FlightManagement.API.IntegrationTests
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Content.ReadAsStringAsync().Result.Should().Be(
-                $"The arrival date {dto.ArrivalDate} for the flight is past the departure date {dto.DepartureDate}");
+                $"The departure date {dto.DepartureDate} for the flight is past the arrival date {dto.ArrivalDate}");
         }
 
 
@@ -118,14 +118,33 @@ namespace FlightManagement.API.IntegrationTests
                 $"The maximum baggage weight per passenger ({101}) shouldn't be greater than the baggage capacity ({10000}) divided by the maximum number of passengers ({100})");
         }
 
+        [Fact]
+        public async Task When_GetFlight_Then_ShouldReturnFlight()
+        {
+            // Arrange
+            var passengers = CreatePassengers();
+            passengers.ForEach(passenger => Context.Passengers.Add(passenger));
+            Context.Flights.Add(passengers[0].Flight);
+            Context.SaveChanges();
+            var flightId = passengers[0].Id;
+
+            // Act
+            var responseMessage = await HttpClient.GetAsync(ApiUrl + flightId);
+            var response = await responseMessage.Content.ReadFromJsonAsync<Flight>();
+
+            // Assert
+            responseMessage.EnsureSuccessStatusCode();
+            response.Passengers.Count.Should().Be(3);
+        }
+
         private List<Passenger> CreatePassengers()
         {
             var persons = CreatePersons();
             var flight = CreateFlight();
             var baggages = CreateBaggages();
-            var passengers = (
-                persons.Select(person => Passenger.Create(person, flight, 70, baggages, null).Entity).ToList()
-            );
+
+            var passengers = persons.Select(person =>
+                Passenger.Create(person, flight, 80, baggages, new List<Allergy>()).Entity).ToList();
 
             return passengers;
         }

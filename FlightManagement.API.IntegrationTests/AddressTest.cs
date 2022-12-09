@@ -9,7 +9,7 @@ namespace FlightManagement.API.IntegrationTests
 {
     public class AddressTest : BaseIntegrationTests<AddressesController>
     {
-        private const string ApiUrl = "/api/v1/addresses";
+        private const string ApiUrl = "/api/v1/addresses/";
 
         [Fact]
         public async Task WhenCreateAddress_Then_ShouldReturnAddressAsync()
@@ -40,29 +40,15 @@ namespace FlightManagement.API.IntegrationTests
         {
             // Arrange
             var address = CreateAddress();
-            var dto = new CreateAddressDto()
-            {
-                Number = address.Number,
-                Street = address.Street,
-                City = address.City,
-                Country = address.Country,
-            };
+            Context.Addresses.Add(address);
+            Context.SaveChanges();
 
             // Act
-            var createResponseMessage = await HttpClient.PostAsJsonAsync(ApiUrl, dto);
-            var addressResponse = await createResponseMessage.Content.ReadFromJsonAsync<Address>();
-            var addressId = addressResponse.Id;
-            var deleteAddressResponseMessage = await HttpClient.DeleteAsync($"/api/v1/addresses/{addressId}");
+            var deleteAddressResponseMessage = await HttpClient.DeleteAsync(ApiUrl + address.Id);
             var addressesResponseMessage = await HttpClient.GetAsync(ApiUrl);
             var addresses = await addressesResponseMessage.Content.ReadFromJsonAsync<List<Address>>();
 
             // Assert
-            createResponseMessage.EnsureSuccessStatusCode();
-            createResponseMessage.StatusCode.Should().Be(HttpStatusCode.Created);
-            addressResponse.Number.Should().Be(address.Number);
-            addressResponse.Street.Should().Be(address.Street);
-            addressResponse.City.Should().Be(address.City);
-            addressResponse.Country.Should().Be(address.Country);
             deleteAddressResponseMessage.StatusCode.Should().Be(HttpStatusCode.NoContent);
             addresses.Count.Should().Be(0);
         }
@@ -72,24 +58,14 @@ namespace FlightManagement.API.IntegrationTests
         {
             // Arrange
             var address = CreateAddress();
-            var dto = new CreateAddressDto()
-            {
-                Number = address.Number,
-                Street = address.Street,
-                City = address.City,
-                Country = address.Country,
-            };
+            Context.Addresses.Add(address);
+            Context.SaveChanges();
 
             // Act
-            var createResponseMessage = await HttpClient.PostAsJsonAsync(ApiUrl, dto);
-            var addressResponse = await createResponseMessage.Content.ReadFromJsonAsync<Address>();
-            var addressId = addressResponse.Id;
-            var getAddressResponseMessage = await HttpClient.GetAsync(ApiUrl + $"/{addressId}");
+            var getAddressResponseMessage = await HttpClient.GetAsync(ApiUrl + address.Id);
             var getAddressResponse = await getAddressResponseMessage.Content.ReadFromJsonAsync<Address>();
 
             // Assert
-            createResponseMessage.EnsureSuccessStatusCode();
-            createResponseMessage.StatusCode.Should().Be(HttpStatusCode.Created);
             getAddressResponseMessage.EnsureSuccessStatusCode();
             getAddressResponseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
             getAddressResponse.Number.Should().Be(address.Number);

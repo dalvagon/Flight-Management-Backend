@@ -36,7 +36,7 @@ namespace FlightManagement.Domain.Entities
             if (arrivalDate.CompareTo(departureDate) < 0)
             {
                 return Result<Flight>.Failure(
-                    $"The arrival date {arrivalDate} for the flight is past the departure date {departureDate}");
+                    $"The departure date {departureDate} for the flight is past the arrival date {arrivalDate}");
             }
 
             if (baggageWeightCapacity / passengerCapacity < maxBaggageWeightPerPassenger)

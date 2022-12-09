@@ -1,4 +1,4 @@
-﻿namespace FlightManagement.DOmain.Helpers
+﻿namespace FlightManagement.Domain.Helpers
 {
     public class Result
     {

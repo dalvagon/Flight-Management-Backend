@@ -42,5 +42,16 @@ namespace FlightManagement.API.Controllers
 
             return Created(nameof(Get), airport);
         }
+
+        [HttpDelete("{airportId:guid}")]
+        public IActionResult Delete(Guid airportId)
+        {
+            var airport = _airportRepository.Get(airportId);
+
+            _airportRepository.Delete(airport);
+            _airportRepository.SaveChanges();
+
+            return NoContent();
+        }
     }
 }

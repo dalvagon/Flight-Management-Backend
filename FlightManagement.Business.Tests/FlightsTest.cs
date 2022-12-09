@@ -1,4 +1,5 @@
 ﻿using FlightManagement.Domain.Entities;
+using FlightManagement.Domain.Helpers;
 using FluentAssertions;
 using Xunit;
 
@@ -38,6 +39,41 @@ namespace FlightManagement.Business.Tests
                 .Be(
                     $"Person with id {passengers[0].Person.Id} is already a passenger in flight with id {flight.Id}"
                 );
+        }
+
+        [Fact]
+        public void When_CreateFlightWithTheDepartureDatePastTheArrivalDate_Then_ShouldReturnFailure()
+        {
+            // Arrange
+            var result = CreateBadFlight1();
+
+            // Act
+
+            // Assert
+            result.IsFailure.Should().BeTrue();
+            result.Error
+                .Should()
+                .Be(
+                    $"The departure date {new DateTime(2022, 11, 23, 11, 30, 0)} " +
+                    $"for the flight is past the arrival date {new DateTime(2022, 11, 23, 10, 30, 0)}");
+        }
+
+        [Fact]
+        public void When_AddPassengersToFlightWithNoSeatsLeft_Then_ShouldReturnFailure()
+        {
+            // Arrange
+            var flight = CreateBadFlight2();
+
+            // Act
+            var passengers = CreatePassengers();
+            var result = flight.AttachPassengerToFlight(passengers[0]);
+
+            // Assert
+            result.IsFailure.Should().BeTrue();
+            result.Error
+                .Should()
+                .Be(
+                    $"There aren't any seats left on flight with id {flight.Id}");
         }
 
         [Fact]
@@ -165,6 +201,43 @@ namespace FlightManagement.Business.Tests
                     CreateDestinationAirport()
                 )
                 .Entity;
+        }
+
+        private Flight CreateBadFlight2()
+        {
+            return Flight
+                .Create(
+                    new DateTime(2022, 11, 23, 10, 30, 0),
+                    new DateTime(2022, 11, 23, 22, 30, 0),
+                    0,
+                    1000000,
+                    10,
+                    40,
+                    2,
+                    5,
+                    2.5,
+                    CreateDepartureAirport(),
+                    CreateDestinationAirport()
+                )
+                .Entity;
+        }
+
+        private Result<Flight> CreateBadFlight1()
+        {
+            return Flight
+                .Create(
+                    new DateTime(2022, 11, 23, 11, 30, 0),
+                    new DateTime(2022, 11, 23, 10, 30, 0),
+                    200,
+                    1000000,
+                    10,
+                    40,
+                    2,
+                    5,
+                    2.5,
+                    CreateDepartureAirport(),
+                    CreateDestinationAirport()
+                );
         }
 
         private Airport CreateDepartureAirport()
