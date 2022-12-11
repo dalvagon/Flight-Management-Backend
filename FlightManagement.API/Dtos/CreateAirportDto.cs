@@ -4,6 +4,5 @@
     {
         public string Name { get; set; }
         public Guid AddressId { get; set; }
-        public string City { get; set; }
     }
 }

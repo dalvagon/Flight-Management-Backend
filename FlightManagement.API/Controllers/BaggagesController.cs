@@ -21,15 +21,15 @@ namespace FlightManagement.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult All()
+        public async Task<IActionResult> All()
         {
-            return Ok(_baggageRepository.All());
+            return Ok(await _baggageRepository.AllAsync());
         }
 
         [HttpGet("{baggageId:guid}")]
-        public IActionResult Get(Guid baggageId)
+        public async Task<IActionResult> Get(Guid baggageId)
         {
-            return Ok(_baggageRepository.Get(baggageId));
+            return Ok(await _baggageRepository.GetAsync(baggageId));
         }
     }
 }

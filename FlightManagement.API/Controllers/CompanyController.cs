@@ -16,9 +16,9 @@ namespace FlightManagement.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult All()
+        public async Task<IActionResult> All()
         {
-            return Ok(_companyRepository.All());
+            return Ok(await _companyRepository.AllAsync());
         }
     }
 }

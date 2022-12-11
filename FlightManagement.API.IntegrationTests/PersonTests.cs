@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Http.Json;
 using FlightManagement.API.Controllers;
 using FlightManagement.API.Dtos;
-using FlightManagement.API.Features.Persons;
 using FlightManagement.Domain.Entities;
 using FluentAssertions;
 
@@ -16,21 +15,60 @@ namespace FlightManagement.API.IntegrationTests
         public async Task When_CreatePerson_Then_ShouldReturnPersonAsync()
         {
             // Arrange
-            CreatePersonDto dto = GetPersonDto();
+            var country = CreateCountry();
+            var city = CreateCity();
+            await Context.Countries.AddAsync(country);
+            await Context.Cities.AddAsync(city);
+            await Context.SaveChangesAsync();
+
+            var dto = new CreatePersonDto
+            {
+                Name = "John",
+                Surname = "Doe",
+                Gender = "Male",
+                AddressDto = new CreateAddressDto
+                {
+                    Number = "100",
+                    Street = "Oak Street",
+                    CityId = city.Id,
+                    CountryId = country.Id,
+                }
+            };
 
             // Act
-            var response = await HttpClient.PostAsJsonAsync(ApiUrl, dto);
+            var responseMessage = await HttpClient.PostAsJsonAsync(ApiUrl, dto);
+            var response = await responseMessage.Content.ReadFromJsonAsync<Person>();
 
             // Assert
-            response.EnsureSuccessStatusCode();
-            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            responseMessage.EnsureSuccessStatusCode();
+            responseMessage.StatusCode.Should().Be(HttpStatusCode.Created);
+            response?.Name.Should().Be("John");
+            response?.Surname.Should().Be("Doe");
         }
 
         [Fact]
         public async Task When_CreatePersonWithInvalidGender_Then_ShouldReturnBadRequest()
         {
             // Arrange
-            CreatePersonDto dto = GetPersonDto();
+            var country = CreateCountry();
+            var city = CreateCity();
+            Context.Countries.Add(country);
+            Context.Cities.Add(city);
+            Context.SaveChanges();
+
+            var dto = new CreatePersonDto
+            {
+                Name = "John",
+                Surname = "Doe",
+                Gender = "Male",
+                AddressDto = new CreateAddressDto
+                {
+                    Number = "100",
+                    Street = "Oak Street",
+                    CityId = city.Id,
+                    CountryId = country.Id,
+                }
+            };
             dto.Gender = "MALE";
 
             // Act
@@ -58,27 +96,23 @@ namespace FlightManagement.API.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
-        private CreatePersonDto GetPersonDto()
-        {
-            return new CreatePersonDto
-            {
-                Name = "John",
-                Surname = "Doe",
-                Age = 21,
-                Gender = "Male",
-                AddressDto = new CreateAddressDto
-                {
-                    Number = "100",
-                    Street = "Oak Street",
-                    City = "London",
-                    Country = "Uk"
-                }
-            };
-        }
-
         private Address CreateAddress()
         {
-            return new Address("1", "Oak Street", "New York", "USA");
+            var country = CreateCountry();
+            var city = CreateCity();
+
+            return Address.Create("1", "Oak Street", city, country).Entity;
+        }
+
+        private Country CreateCountry()
+        {
+            return Country.Create("USA", "US").Entity;
+        }
+
+        private City CreateCity()
+        {
+            var country = CreateCountry();
+            return City.Create("New York", country).Entity;
         }
 
         private Person CreatePerson()

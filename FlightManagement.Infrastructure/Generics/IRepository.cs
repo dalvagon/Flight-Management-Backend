@@ -4,12 +4,12 @@ namespace FlightManagement.Infrastructure.Generics
 {
     public interface IRepository<T>
     {
-        T Add(T entity);
-        T Update(T entity);
-        T Get(Guid id);
-        IEnumerable<T> All();
-        IEnumerable<T> Find(Expression<Func<T, bool>> predicate);
-        void Delete(T Enity);
-        void SaveChanges();
+        Task<T> AddAsync(T entity);
+        Task<T> UpdateAsync(T entity);
+        Task<T> GetAsync(Guid id);
+        Task<IReadOnlyCollection<T>> AllAsync();
+        Task<IReadOnlyCollection<T>> FindAsync(Expression<Func<T, bool>> predicate);
+        void DeleteAsync(T Enity);
+        void SaveChangesAsync();
     }
 }

@@ -1,23 +1,24 @@
-﻿using FlightManagement.Domain.Helpers;
+﻿using System.Text.Json.Serialization;
+using FlightManagement.Domain.Helpers;
 
 namespace FlightManagement.Domain.Entities
 {
     public class Flight
     {
-        public Guid Id { get; private set; }
-        public DateTime DepartureDate { get; private set; }
-        public DateTime ArrivalDate { get; private set; }
-        public int PassengerCapacity { get; private set; }
-        public double BaggageWeightCapacity { get; private set; }
-        public double MaxWeightPerBaggage { get; private set; }
-        public double MaxBaggageWeightPerPassenger { get; private set; }
-        public double MaxBaggageWidth { get; private set; }
-        public double MaxBaggageHeight { get; private set; }
+        [JsonInclude] public Guid Id { get; private set; }
+        [JsonInclude] public DateTime DepartureDate { get; private set; }
+        [JsonInclude] public DateTime ArrivalDate { get; private set; }
+        [JsonInclude] public int PassengerCapacity { get; private set; }
+        [JsonInclude] public double BaggageWeightCapacity { get; private set; }
+        [JsonInclude] public double MaxWeightPerBaggage { get; private set; }
+        [JsonInclude] public double MaxBaggageWeightPerPassenger { get; private set; }
+        [JsonInclude] public double MaxBaggageWidth { get; private set; }
+        [JsonInclude] public double MaxBaggageHeight { get; private set; }
         public double MaxBaggageLength { get; private set; }
-        public List<Passenger> Passengers { get; private set; } = new();
-        public Airport DepartureAirport { get; private set; }
-        public Airport DestinationAirport { get; private set; }
-        public List<Airport> IntermediateStops { get; private set; } = new();
+        [JsonInclude] public List<Passenger> Passengers { get; private set; } = new();
+        [JsonInclude] public Airport DepartureAirport { get; private set; }
+        [JsonInclude] public Airport DestinationAirport { get; private set; }
+        [JsonInclude] public List<Airport> IntermediateStops { get; private set; } = new();
 
         public static Result<Flight> Create(
             DateTime departureDate,

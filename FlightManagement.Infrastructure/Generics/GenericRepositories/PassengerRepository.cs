@@ -9,23 +9,23 @@ namespace FlightManagement.Infrastructure.Generics.GenericRepositories
         {
         }
 
-        public override Passenger Get(Guid id)
+        public override Task<Passenger> GetAsync(Guid id)
         {
-            return Context.Passengers.Include(p => p.Person)
+            return Context.Passengers
+                .Include(p => p.Person)
                 .Include(p => p.Flight)
                 .Include(p => p.Allergies)
                 .Include(p => p.Baggages)
-                .Where(p => p.Id == id)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public override IEnumerable<Passenger> All()
+        public override async Task<IReadOnlyCollection<Passenger>> AllAsync()
         {
-            return Context.Passengers.Include(p => p.Person)
+            return await Context.Passengers.Include(p => p.Person)
                 .Include(p => p.Flight)
                 .Include(p => p.Allergies)
                 .Include(p => p.Baggages)
-                .ToList();
+                .ToListAsync();
         }
     }
 }

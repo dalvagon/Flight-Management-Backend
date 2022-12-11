@@ -1,15 +1,16 @@
-﻿using FlightManagement.Domain.Helpers;
+﻿using System.Text.Json.Serialization;
+using FlightManagement.Domain.Helpers;
 
 namespace FlightManagement.Domain.Entities
 {
     public class Person
     {
-        public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public string Surname { get; private set; }
-        public DateTime DateOfBirth { get; private set; }
-        public Gender Gender { get; private set; }
-        public Address Address { get; private set; }
+        [JsonInclude] public Guid Id { get; private set; }
+        [JsonInclude] public string Name { get; private set; }
+        [JsonInclude] public string Surname { get; private set; }
+        [JsonInclude] public DateTime DateOfBirth { get; private set; }
+        [JsonInclude] public Gender Gender { get; private set; }
+        [JsonInclude] public Address Address { get; private set; }
 
         public static Result<Person> Create(
             string name,

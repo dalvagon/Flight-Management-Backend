@@ -15,7 +15,7 @@ namespace FlightManagement.API.IntegrationTests
         private const string ApiUrl = "/api/v1/passengers";
 
         [Fact]
-        public void When_CreatePassenger_Then_ShouldReturnPassenger()
+        public async Task When_CreatePassenger_Then_ShouldReturnPassenger()
         {
             var passengerRepositoryMock = new Mock<IRepository<Passenger>>();
             var personRepositoryMock = new Mock<IRepository<Person>>();
@@ -28,10 +28,10 @@ namespace FlightManagement.API.IntegrationTests
             var passengersController = new PassengersController(passengerRepositoryMock.Object,
                 personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object);
 
-            flightRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
-                .Returns(flight);
-            personRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
-                .Returns(person);
+            flightRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(flight);
+            personRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(person);
 
             var dto = new CreatePassengerDto
             {
@@ -49,7 +49,7 @@ namespace FlightManagement.API.IntegrationTests
             };
 
             // Act
-            var response = passengersController.Create(dto) as ObjectResult;
+            var response = await passengersController.Create(dto) as ObjectResult;
             var passengerResponse = response.Value as Passenger;
 
             // Assert
@@ -61,7 +61,7 @@ namespace FlightManagement.API.IntegrationTests
         }
 
         [Fact]
-        public void When_CreatePassengerThatCarriesWeightAboveTheLimit_Then_ShouldReturnBadRequest()
+        public async Task When_CreatePassengerThatCarriesWeightAboveTheLimit_Then_ShouldReturnBadRequest()
         {
             var passengerRepositoryMock = new Mock<IRepository<Passenger>>();
             var personRepositoryMock = new Mock<IRepository<Person>>();
@@ -71,18 +71,17 @@ namespace FlightManagement.API.IntegrationTests
             var person = CreatePersons()[0];
             var baggages = new List<Baggage>
             {
-                new(5, 2, 4, 1),
-                new(10, 2, 2.5, 1.5),
-                new(6, 1.5, 4.5, 2),
+                Baggage.Create(5, 2, 4, 1).Entity,
+                Baggage.Create(10, 2, 2.5, 1.5).Entity,
+                Baggage.Create(6, 1.5, 4.5, 2).Entity,
             };
 
             var passengersController = new PassengersController(passengerRepositoryMock.Object,
                 personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object);
 
-            flightRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
-                .Returns(flight);
-            personRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
-                .Returns(person);
+            flightRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(flight);
+            personRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>())).ReturnsAsync(person);
 
             var dto = new CreatePassengerDto
             {
@@ -100,7 +99,7 @@ namespace FlightManagement.API.IntegrationTests
             };
 
             // Act
-            var response = passengersController.Create(dto) as ObjectResult;
+            var response = await passengersController.Create(dto) as ObjectResult;
 
             // Assert
             response.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
@@ -109,7 +108,7 @@ namespace FlightManagement.API.IntegrationTests
         }
 
         [Fact]
-        public void When_CreatePassengerTwiceForTheSameFlight_Then_ShouldReturnBadRequest()
+        public async Task When_CreatePassengerTwiceForTheSameFlight_Then_ShouldReturnBadRequest()
         {
             var passengerRepositoryMock = new Mock<IRepository<Passenger>>();
             var personRepositoryMock = new Mock<IRepository<Person>>();
@@ -122,10 +121,10 @@ namespace FlightManagement.API.IntegrationTests
             var passengersController = new PassengersController(passengerRepositoryMock.Object,
                 personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object);
 
-            flightRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
-                .Returns(flight);
-            personRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
-                .Returns(person);
+            flightRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(flight);
+            personRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(person);
 
             var dto = new CreatePassengerDto
             {
@@ -144,7 +143,7 @@ namespace FlightManagement.API.IntegrationTests
 
             // Act
             passengersController.Create(dto);
-            var response = passengersController.Create(dto) as ObjectResult;
+            var response = await passengersController.Create(dto) as ObjectResult;
             //var passenger = response.Value as Passenger;
 
             // Assert
@@ -155,7 +154,7 @@ namespace FlightManagement.API.IntegrationTests
         }
 
         [Fact]
-        public void When_CreatePassengerWithBaggageWithWeightAboveTheLimit_Then_ShouldReturnBadRequest()
+        public async Task When_CreatePassengerWithBaggageWithWeightAboveTheLimit_Then_ShouldReturnBadRequest()
         {
             var passengerRepositoryMock = new Mock<IRepository<Passenger>>();
             var personRepositoryMock = new Mock<IRepository<Person>>();
@@ -165,18 +164,16 @@ namespace FlightManagement.API.IntegrationTests
             var person = CreatePersons()[0];
             var baggages = new List<Baggage>
             {
-                new(4, 2, 4, 2),
-                new(11, 2, 2.5, 1.5),
-                new(5, 1.5, 4.5, 2),
+                Baggage.Create(4, 2, 4, 2).Entity,
+                Baggage.Create(11, 2, 2.5, 1.5).Entity,
+                Baggage.Create(5, 1.5, 4.5, 2).Entity,
             };
 
             var passengersController = new PassengersController(passengerRepositoryMock.Object,
                 personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object);
 
-            flightRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
-                .Returns(flight);
-            personRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
-                .Returns(person);
+            flightRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>())).ReturnsAsync(flight);
+            personRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>())).ReturnsAsync(person);
 
             var dto = new CreatePassengerDto
             {
@@ -194,7 +191,7 @@ namespace FlightManagement.API.IntegrationTests
             };
 
             // Act
-            var response = passengersController.Create(dto) as ObjectResult;
+            var response = await passengersController.Create(dto) as ObjectResult;
 
             // Assert
             response.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
@@ -204,7 +201,7 @@ namespace FlightManagement.API.IntegrationTests
         }
 
         [Fact]
-        public void When_CreatePassengerWithBaggageWithDimensionsAboveTheLimit_Then_ShouldReturnBadRequest()
+        public async Task When_CreatePassengerWithBaggageWithDimensionsAboveTheLimit_Then_ShouldReturnBadRequest()
         {
             var passengerRepositoryMock = new Mock<IRepository<Passenger>>();
             var personRepositoryMock = new Mock<IRepository<Person>>();
@@ -214,18 +211,16 @@ namespace FlightManagement.API.IntegrationTests
             var person = CreatePersons()[0];
             var baggages = new List<Baggage>
             {
-                new(4, 2, 4, 10),
-                new(10, 2, 2.5, 1.5),
-                new(5, 1.5, 4.5, 2),
+                Baggage.Create(4, 2, 4, 10).Entity,
+                Baggage.Create(10, 2, 2.5, 1.5).Entity,
+                Baggage.Create(5, 1.5, 4.5, 2).Entity,
             };
 
             var passengersController = new PassengersController(passengerRepositoryMock.Object,
                 personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object);
 
-            flightRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
-                .Returns(flight);
-            personRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
-                .Returns(person);
+            flightRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>())).ReturnsAsync(flight);
+            personRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>())).ReturnsAsync(person);
 
             var dto = new CreatePassengerDto
             {
@@ -243,7 +238,7 @@ namespace FlightManagement.API.IntegrationTests
             };
 
             // Act
-            var response = passengersController.Create(dto) as ObjectResult;
+            var response = await passengersController.Create(dto) as ObjectResult;
 
             // Assert
             response.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
@@ -284,8 +279,8 @@ namespace FlightManagement.API.IntegrationTests
         {
             return new List<Baggage>
             {
-                new(10, 2, 1.5, 2),
-                new(5, 1.5, 4.5, 2),
+                Baggage.Create(10, 2, 1.5, 2).Entity,
+                Baggage.Create(5, 1.5, 4.5, 2).Entity,
             };
         }
 
@@ -311,23 +306,32 @@ namespace FlightManagement.API.IntegrationTests
         private Airport CreateDepartureAirport()
         {
             var address = CreateAddress1();
-            return Airport.Create("Wizz Airport", address, "Bucharest").Entity;
+            return Airport.Create("Wizz Airport", address).Entity;
         }
 
         private Airport CreateDestinationAirport()
         {
             var address = CreateAddress2();
-            return Airport.Create("Suceava Airport", address, "Suceava").Entity;
+            return Airport.Create("Suceava Airport", address).Entity;
         }
 
         private Address CreateAddress1()
         {
-            return new Address("100", "Carol 1", "Bucharest", "Romania");
+            var country = CreateCountry();
+            var city = City.Create("Suceava", country).Entity;
+            return Address.Create("100", "Carol 1", city, country).Entity;
         }
 
         private Address CreateAddress2()
         {
-            return new Address("2087", "Mihai Eminescu", "Suceava", "Romania");
+            var country = CreateCountry();
+            var city = City.Create("Suceava", country).Entity;
+            return Address.Create("2087", "Mihai Eminescu", city, country).Entity;
+        }
+
+        private Country CreateCountry()
+        {
+            return Country.Create("Romania", "RO").Entity;
         }
 
         private List<Person> CreatePersons()

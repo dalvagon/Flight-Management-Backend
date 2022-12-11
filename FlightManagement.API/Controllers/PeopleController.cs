@@ -1,4 +1,4 @@
-﻿using FlightManagement.API.Features.Persons;
+﻿using FlightManagement.API.Dtos;
 using FlightManagement.Domain.Entities;
 using FlightManagement.Infrastructure.Generics;
 using Microsoft.AspNetCore.Mvc;
@@ -11,30 +11,39 @@ namespace FlightManagement.API.Controllers
     {
         private readonly IRepository<Person> _personRepository;
         private readonly IRepository<Address> _addressRepository;
+        private readonly IRepository<Country> _countryRepository;
+        private readonly IRepository<City> _cityRepository;
 
-        public PeopleController(IRepository<Person> personRepository, IRepository<Address> addressRepository)
+        public PeopleController(IRepository<Person> personRepository, IRepository<Address> addressRepository,
+            IRepository<Country> countryRepository, IRepository<City> cityRepository)
         {
             _personRepository = personRepository;
             _addressRepository = addressRepository;
+            _countryRepository = countryRepository;
+            _cityRepository = cityRepository;
         }
 
         [HttpGet]
-        public IActionResult All()
+        public async Task<IActionResult> All()
         {
-            return Ok(_personRepository.All());
+            return Ok(await _personRepository.AllAsync());
         }
 
         [HttpGet("{personId:guid}")]
-        public IActionResult Get(Guid personId)
+        public async Task<IActionResult> Get(Guid personId)
         {
-            return Ok(_personRepository.Get(personId));
+            return Ok(await _personRepository.GetAsync(personId));
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] CreatePersonDto dto)
+        public async Task<IActionResult> Create([FromBody] CreatePersonDto dto)
         {
-            var address = new Address(dto.AddressDto.Number, dto.AddressDto.Street, dto.AddressDto.City,
-                dto.AddressDto.Country);
+            var country = await _countryRepository.GetAsync(dto.AddressDto.CountryId);
+            var city = await _cityRepository.GetAsync(dto.AddressDto.CityId);
+
+
+            var address = Address.Create(dto.AddressDto.Number, dto.AddressDto.Street, city,
+                country).Entity;
             var result = Person.Create(dto.Name, dto.Surname, dto.DateOfBirth, dto.Gender, address);
             if (result.IsFailure)
             {
@@ -42,21 +51,21 @@ namespace FlightManagement.API.Controllers
             }
 
             Person person = result.Entity;
-            _addressRepository.Add(address);
-            _addressRepository.SaveChanges();
-            _personRepository.Add(person);
-            _personRepository.SaveChanges();
+            await _addressRepository.AddAsync(address);
+            _addressRepository.SaveChangesAsync();
+            await _personRepository.AddAsync(person);
+            _personRepository.SaveChangesAsync();
 
-            return Created(nameof(Get), person);
+            return Created(nameof(All), person);
         }
 
         [HttpDelete("{personId:guid}")]
-        public IActionResult Delete(Guid personId)
+        public async Task<IActionResult> Delete(Guid personId)
         {
-            var person = _personRepository.Get(personId);
+            var person = await _personRepository.GetAsync(personId);
 
-            _personRepository.Delete(person);
-            _personRepository.SaveChanges();
+            _personRepository.DeleteAsync(person);
+            _personRepository.SaveChangesAsync();
 
             return NoContent();
         }

@@ -24,33 +24,39 @@ namespace FlightManagement.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult All()
+        public async Task<IActionResult> All()
         {
-            return Ok(_passengerRepository.All());
+            return Ok(await _passengerRepository.AllAsync());
         }
 
         [HttpGet("byFlight")]
-        public IActionResult AllForFlight([FromQuery] Guid flightId)
+        public async Task<IActionResult> AllForFlight([FromQuery] Guid flightId)
         {
-            var passengers = _passengerRepository.All();
+            var passengers = await _passengerRepository.AllAsync();
 
             return Ok(passengers.Where(p => p.Flight.Id == flightId));
         }
 
         [HttpGet("{passengerId:guid}")]
-        public IActionResult Get(Guid passengerId)
+        public async Task<IActionResult> Get(Guid passengerId)
         {
-            return Ok(_passengerRepository.Get(passengerId));
+            return Ok(await _passengerRepository.GetAsync(passengerId));
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] CreatePassengerDto dto)
+        public async Task<IActionResult> Create([FromBody] CreatePassengerDto dto)
         {
-            var person = _personRepository.Get(dto.PersonId);
-            var flight = _flightRepository.Get(dto.FlightId);
-            var baggages = dto.BaggageDtos.Select(dto => new Baggage(dto.Weight, dto.Width, dto.Height, dto.Length))
+            var person = await _personRepository.GetAsync(dto.PersonId);
+            var flight = await _flightRepository.GetAsync(dto.FlightId);
+            var baggages = dto.BaggageDtos
+                .Select(dto => Baggage.Create(dto.Weight, dto.Width, dto.Height, dto.Length).Entity)
                 .ToList();
-            var allergies = dto.AllergyIds.Select(id => _allergyRepository.Get(id)).ToList();
+            var allergies = new List<Allergy>();
+            dto.AllergyIds.ForEach(async id =>
+            {
+                var allergy = await _allergyRepository.GetAsync(id);
+                allergies.Add(allergy);
+            });
 
             var result = Passenger.Create(person, flight, dto.Weight, baggages, allergies);
 
@@ -60,19 +66,18 @@ namespace FlightManagement.API.Controllers
             }
 
             var passenger = result.Entity;
-            _passengerRepository.Add(passenger);
-            _passengerRepository.SaveChanges();
+            await _passengerRepository.AddAsync(passenger);
+            _passengerRepository.SaveChangesAsync();
 
             return Created(nameof(Get), passenger);
         }
 
         [HttpDelete]
-        public IActionResult Delete(Guid passengerId)
+        public async Task<IActionResult> Delete(Guid passengerId)
         {
-            var passenger = _passengerRepository.Get(passengerId);
-
-            _passengerRepository.Delete(passenger);
-            _passengerRepository.SaveChanges();
+            var passenger = await _passengerRepository.GetAsync(passengerId);
+            _passengerRepository.DeleteAsync(passenger);
+            _passengerRepository.SaveChangesAsync();
 
             return NoContent();
         }

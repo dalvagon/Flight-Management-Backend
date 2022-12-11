@@ -15,24 +15,23 @@ namespace FlightManagement.API.IntegrationTests
         private const string ApiUrl = "/api/v1/airports/";
 
         [Fact]
-        public void When_CreateMockAirport_Then_ShouldReturnAirport()
+        public async Task When_CreateMockAirport_Then_ShouldReturnAirport()
         {
             // Arrange
             var airportRepositoryMock = new Mock<IRepository<Airport>>();
             var addressRepositoryMock = new Mock<IRepository<Address>>();
             var address = CreateAddress();
-            addressRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
-                .Returns(address);
+            addressRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(address);
             var airportController = new AirportsController(airportRepositoryMock.Object, addressRepositoryMock.Object);
             var dto = new CreateAirportDto()
             {
                 Name = "NY Airport",
                 AddressId = address.Id,
-                City = address.City
             };
 
             // Act
-            var response = airportController.Create(dto) as ObjectResult;
+            var response = await airportController.Create(dto) as ObjectResult;
             var airportResponse = response.Value as Airport;
 
             // Assert
@@ -51,7 +50,6 @@ namespace FlightManagement.API.IntegrationTests
             {
                 Name = "New York Airport",
                 AddressId = address.Id,
-                City = address.City,
             };
 
             // Act
@@ -82,12 +80,26 @@ namespace FlightManagement.API.IntegrationTests
 
         private Airport CreateAirport()
         {
-            return Airport.Create("Airport", CreateAddress(), "City").Entity;
+            return Airport.Create("Airport", CreateAddress()).Entity;
         }
 
         private Address CreateAddress()
         {
-            return new Address("1", "Oak Street", "New York", "USA");
+            var country = CreateCountry();
+            var city = CreateCity();
+
+            return Address.Create("1", "Oak Street", city, country).Entity;
+        }
+
+        private Country CreateCountry()
+        {
+            return Country.Create("USA", "US").Entity;
+        }
+
+        private City CreateCity()
+        {
+            var country = CreateCountry();
+            return City.Create("New York", country).Entity;
         }
     }
 }

@@ -1,15 +1,15 @@
-﻿using FlightManagement.Domain.Helpers;
+﻿using System.Text.Json.Serialization;
+using FlightManagement.Domain.Helpers;
 
 namespace FlightManagement.Domain.Entities
 {
     public class Airport
     {
-        public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public Address Address { get; private set; }
-        public string City { get; private set; }
+        [JsonInclude] public Guid Id { get; private set; }
+        [JsonInclude] public string Name { get; private set; }
+        [JsonInclude] public Address Address { get; private set; }
 
-        public static Result<Airport> Create(string name, Address address, string city)
+        public static Result<Airport> Create(string name, Address address)
         {
             return Result<Airport>.Success(
                 new Airport
@@ -17,7 +17,6 @@ namespace FlightManagement.Domain.Entities
                     Id = Guid.NewGuid(),
                     Name = name,
                     Address = address,
-                    City = city
                 }
             );
         }

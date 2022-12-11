@@ -6,6 +6,6 @@
         public Guid FlightId { get; set; }
         public double Weight { get; set; }
         public List<CreateBaggageDto> BaggageDtos { get; set; }
-        public List<Guid> AllergyIds { get; set; }
+        public List<Guid>? AllergyIds { get; set; }
     }
 }

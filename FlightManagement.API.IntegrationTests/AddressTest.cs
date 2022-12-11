@@ -16,12 +16,16 @@ namespace FlightManagement.API.IntegrationTests
         {
             // Arrange
             var address = CreateAddress();
+            Context.Countries.Add(address.Country);
+            Context.Cities.Add(address.City);
+            Context.SaveChanges();
+
             var dto = new CreateAddressDto()
             {
                 Number = address.Number,
                 Street = address.Street,
-                City = address.City,
-                Country = address.Country,
+                CityId = address.City.Id,
+                CountryId = address.Country.Id,
             };
 
             // Act
@@ -32,7 +36,7 @@ namespace FlightManagement.API.IntegrationTests
             // Assert
             responseMessage.EnsureSuccessStatusCode();
             responseMessage.StatusCode.Should().Be(HttpStatusCode.Created);
-            addresses.Count.Should().Be(1);
+            addresses?.Count.Should().Be(1);
         }
 
         [Fact]
@@ -58,8 +62,10 @@ namespace FlightManagement.API.IntegrationTests
         {
             // Arrange
             var address = CreateAddress();
+            Context.Countries.Add(address.Country);
+            Context.Cities.Add(address.City);
             Context.Addresses.Add(address);
-            Context.SaveChanges();
+            Context.SaveChangesAsync();
 
             // Act
             var getAddressResponseMessage = await HttpClient.GetAsync(ApiUrl + address.Id);
@@ -68,16 +74,19 @@ namespace FlightManagement.API.IntegrationTests
             // Assert
             getAddressResponseMessage.EnsureSuccessStatusCode();
             getAddressResponseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
-            getAddressResponse.Number.Should().Be(address.Number);
-            getAddressResponse.Street.Should().Be(address.Street);
-            getAddressResponse.City.Should().Be(address.City);
-            getAddressResponse.Country.Should().Be(address.Country);
+            getAddressResponse?.Number.Should().Be(address.Number);
+            getAddressResponse?.Street.Should().Be(address.Street);
+            getAddressResponse?.City.Name.Should().Be(address.City.Name);
+            getAddressResponse?.Country.Name.Should().Be(address.Country.Name);
         }
 
 
         private Address CreateAddress()
         {
-            return new Address("1", "Oak Street", "New York", "USA");
+            var country = Country.Create("USA", "US").Entity;
+            var city = City.Create("New York", country).Entity;
+
+            return Address.Create("1", "Oak Street", city, country).Entity;
         }
     }
 }

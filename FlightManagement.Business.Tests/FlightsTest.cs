@@ -87,9 +87,9 @@ namespace FlightManagement.Business.Tests
             passenger.AttachBaggages(
                 new List<Baggage>
                 {
-                    new(2, 1.5, 5, 2.4),
-                    new(5, 2.5, 2, 1.6),
-                    new(10, 2, 1.5, 2)
+                    Baggage.Create(2, 1.5, 5, 2.4).Entity,
+                    Baggage.Create(5, 2.5, 2, 1.6).Entity,
+                    Baggage.Create(10, 2, 1.5, 2).Entity
                 }
             );
 
@@ -116,9 +116,9 @@ namespace FlightManagement.Business.Tests
             passenger.AttachBaggages(
                 new List<Baggage>
                 {
-                    new(15, 1.5, 2, 2.4),
-                    new(6, 2.5, 2, 1.6),
-                    new(20, 2, 1.5, 2)
+                    Baggage.Create(15, 1.5, 2, 2.4).Entity,
+                    Baggage.Create(6, 2.5, 2, 1.6).Entity,
+                    Baggage.Create(20, 2, 1.5, 2).Entity
                 }
             );
 
@@ -145,9 +145,9 @@ namespace FlightManagement.Business.Tests
             passenger.AttachBaggages(
                 new List<Baggage>
                 {
-                    new(2, 1.5, 2, 2.4),
-                    new(5, 2, 2, 1.6),
-                    new(11, 2, 1.5, 2)
+                    Baggage.Create(2, 1.5, 2, 2.4).Entity,
+                    Baggage.Create(5, 2, 2, 1.6).Entity,
+                    Baggage.Create(11, 2, 1.5, 2).Entity
                 }
             );
 
@@ -169,7 +169,8 @@ namespace FlightManagement.Business.Tests
             var flight = CreateFlight();
             var baggages = CreateBaggages();
             var passengers = (
-                persons.Select(person => Passenger.Create(person, flight, 70, baggages, null).Entity).ToList()
+                persons.Select(person => Passenger.Create(person, flight, 70, baggages, new List<Allergy>()).Entity)
+                    .ToList()
             );
 
             return passengers;
@@ -179,8 +180,8 @@ namespace FlightManagement.Business.Tests
         {
             return new List<Baggage>
             {
-                new(10, 2, 1.5, 2),
-                new(5, 1.5, 4.5, 2),
+                Baggage.Create(10, 2, 1.5, 2).Entity,
+                Baggage.Create(5, 1.5, 4.5, 2).Entity,
             };
         }
 
@@ -243,23 +244,32 @@ namespace FlightManagement.Business.Tests
         private Airport CreateDepartureAirport()
         {
             var address = CreateAddress1();
-            return Airport.Create("Wizz Airport", address, "Bucharest").Entity;
+            return Airport.Create("Wizz Airport", address).Entity;
         }
 
         private Airport CreateDestinationAirport()
         {
             var address = CreateAddress2();
-            return Airport.Create("Suceava Airport", address, "Suceava").Entity;
+            return Airport.Create("Suceava Airport", address).Entity;
         }
 
         private Address CreateAddress1()
         {
-            return new Address("100", "Carol 1", "Bucharest", "Romania");
+            var country = CreateCountry();
+            var city = City.Create("Bucharest", country).Entity;
+            return Address.Create("100", "Carol 1", city, country).Entity;
         }
 
         private Address CreateAddress2()
         {
-            return new Address("2087", "Mihai Eminescu", "Suceava", "Romania");
+            var country = CreateCountry();
+            var city = City.Create("Suceava", country).Entity;
+            return Address.Create("2087", "Mihai Eminescu", city, country).Entity;
+        }
+
+        private Country CreateCountry()
+        {
+            return Country.Create("Romania", "RO").Entity;
         }
 
         private List<Person> CreatePersons()

@@ -31,6 +31,9 @@ builder.Services.AddScoped<IRepository<Company>, CompanyRepository>();
 builder.Services.AddScoped<IRepository<Flight>, FlightRepository>();
 builder.Services.AddScoped<IRepository<Passenger>, PassengerRepository>();
 builder.Services.AddScoped<IRepository<Person>, PersonRepository>();
+builder.Services.AddScoped<IRepository<Country>, CountryRepository>();
+builder.Services.AddScoped<IRepository<City>, CityRepository>();
+
 
 builder.Services.AddCors(options =>
 {

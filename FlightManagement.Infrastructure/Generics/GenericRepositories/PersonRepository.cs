@@ -9,19 +9,18 @@ namespace FlightManagement.Infrastructure.Generics.GenericRepositories
         {
         }
 
-        public override Person Get(Guid id)
+        public override Task<Person> GetAsync(Guid id)
         {
             return Context.People
                 .Include(p => p.Address)
-                .Where(p => p.Id == id)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public override IEnumerable<Person> All()
+        public override async Task<IReadOnlyCollection<Person>> AllAsync()
         {
-            return Context.People
+            return await Context.People
                 .Include(p => p.Address)
-                .ToList();
+                .ToListAsync();
         }
     }
 }

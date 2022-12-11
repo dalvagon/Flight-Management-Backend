@@ -10,7 +10,8 @@ namespace FlightManagement.Infrastructure
         public DbSet<Airport> Airports { get; private set; }
         public DbSet<Allergy> Allergies { get; private set; }
         public DbSet<Baggage> Baggages { get; private set; }
-        public DbSet<Company> Companies { get; private set; }
+        public DbSet<City> Cities { get; private set; }
+        public DbSet<Country> Countries { get; private set; }
         public DbSet<Flight> Flights { get; private set; }
         public DbSet<Passenger> Passengers { get; private set; }
         public DbSet<Person> People { get; private set; }
@@ -18,6 +19,10 @@ namespace FlightManagement.Infrastructure
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
             Database.EnsureCreated();
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
         }
     }
 }

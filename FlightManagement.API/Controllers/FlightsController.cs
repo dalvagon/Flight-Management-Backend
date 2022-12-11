@@ -22,22 +22,22 @@ namespace FlightManagement.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult All()
+        public async Task<IActionResult> All()
         {
-            return Ok(_flightRepository.All());
+            return Ok(await _flightRepository.AllAsync());
         }
 
         [HttpGet("{flightId:guid}")]
-        public IActionResult All(Guid flightId)
+        public async Task<IActionResult> All(Guid flightId)
         {
-            return Ok(_flightRepository.Get(flightId));
+            return Ok(await _flightRepository.GetAsync(flightId));
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] CreateFlightDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateFlightDto dto)
         {
-            var departureAirport = _airpotRepository.Get(dto.DepartureAirportId);
-            var destinationAirport = _airpotRepository.Get(dto.DestinationAirportId);
+            var departureAirport = await _airpotRepository.GetAsync(dto.DepartureAirportId);
+            var destinationAirport = await _airpotRepository.GetAsync(dto.DestinationAirportId);
             var result = Flight
                 .Create(
                     dto.DepartureDate,
@@ -59,16 +59,16 @@ namespace FlightManagement.API.Controllers
             }
 
             var flight = result.Entity;
-            _flightRepository.Add(flight);
-            _flightRepository.SaveChanges();
+            await _flightRepository.AddAsync(flight);
+            _flightRepository.SaveChangesAsync();
 
             return Created(nameof(All), flight);
         }
 
         [HttpPatch("{flightId:guid}/delay")]
-        public IActionResult Update(Guid flightId, [FromBody] UpdateFlightDto dto)
+        public async Task<IActionResult> Update(Guid flightId, [FromBody] UpdateFlightDto dto)
         {
-            var flight = _flightRepository.Get(flightId);
+            var flight = await _flightRepository.GetAsync(flightId);
 
             var newFlight = Flight
                 .Create(
@@ -86,18 +86,18 @@ namespace FlightManagement.API.Controllers
                 )
                 .Entity;
 
-            _flightRepository.Update(newFlight);
-            _flightRepository.SaveChanges();
+            await _flightRepository.UpdateAsync(newFlight);
+            _flightRepository.SaveChangesAsync();
 
             return NoContent();
         }
 
         [HttpDelete("{flightId:guid}")]
-        public IActionResult Remove(Guid flightId)
+        public async Task<IActionResult> Remove(Guid flightId)
         {
-            var flight = _flightRepository.Get(flightId);
-            _flightRepository.Delete(flight);
-            _flightRepository.SaveChanges();
+            var flight = await _flightRepository.GetAsync(flightId);
+            _flightRepository.DeleteAsync(flight);
+            _flightRepository.SaveChangesAsync();
 
             return NoContent();
         }

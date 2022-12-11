@@ -9,26 +9,24 @@ namespace FlightManagement.Infrastructure.Generics.GenericRepositories
         {
         }
 
-        public override Flight Get(Guid id)
+        public override Task<Flight> GetAsync(Guid id)
         {
-            return Context.Flights
-                .Include(f => f.Passengers).ThenInclude(p => p.Person)
+            return Context.Flights.Include(f => f.Passengers).ThenInclude(p => p.Person)
                 .Include(f => f.Passengers).ThenInclude(p => p.Baggages)
-                .Include(f => f.DepartureAirport).ThenInclude(a => a.Address)
-                .Include(f => f.DestinationAirport).ThenInclude(a => a.Address)
+                .Include(f => f.DepartureAirport).ThenInclude(a => a.Address).ThenInclude(a => a.City)
+                .Include(f => f.DestinationAirport).ThenInclude(a => a.Address).ThenInclude(a => a.City)
                 .Include(f => f.IntermediateStops).ThenInclude(a => a.Address)
-                .Where(f => f.Id == id)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync(f => f.Id == id);
         }
 
-        public override IEnumerable<Flight> All()
+        public override async Task<IReadOnlyCollection<Flight>> AllAsync()
         {
-            return Context.Flights
-                .Include(f => f.Passengers).ThenInclude(p => p.Person)
-                .Include(f => f.DepartureAirport)
-                .Include(f => f.DestinationAirport).ThenInclude(a => a.Address)
+            return await Context.Flights.Include(f => f.Passengers).ThenInclude(p => p.Person)
+                .Include(f => f.Passengers).ThenInclude(p => p.Baggages)
+                .Include(f => f.DepartureAirport).ThenInclude(a => a.Address).ThenInclude(a => a.City)
+                .Include(f => f.DestinationAirport).ThenInclude(a => a.Address).ThenInclude(a => a.City)
                 .Include(f => f.IntermediateStops).ThenInclude(a => a.Address)
-                .ToList();
+                .ToListAsync();
         }
     }
 }

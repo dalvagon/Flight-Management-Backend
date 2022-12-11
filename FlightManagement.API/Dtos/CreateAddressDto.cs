@@ -4,7 +4,7 @@
     {
         public string Number { get; set; }
         public string Street { get; set; }
-        public string City { get; set; }
-        public string Country { get; set; }
+        public Guid CityId { get; set; }
+        public Guid CountryId { get; set; }
     }
 }

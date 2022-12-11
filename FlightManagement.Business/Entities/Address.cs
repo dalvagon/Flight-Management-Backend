@@ -1,20 +1,28 @@
-﻿namespace FlightManagement.Domain.Entities
+﻿using System.Text.Json.Serialization;
+using FlightManagement.Domain.Helpers;
+
+namespace FlightManagement.Domain.Entities
 {
     public class Address
     {
-        public Guid Id { get; private set; }
-        public string Number { get; private set; }
-        public string Street { get; private set; }
-        public string City { get; private set; }
-        public string Country { get; private set; }
+        [JsonInclude] public Guid Id { get; private set; }
+        [JsonInclude] public string Number { get; private set; }
+        [JsonInclude] public string Street { get; private set; }
+        [JsonInclude] public City City { get; private set; }
+        [JsonInclude] public Country Country { get; private set; }
 
-        public Address(string number, string street, string city, string country)
+        public static Result<Address> Create(string number, string street, City city, Country country)
         {
-            Id = Guid.NewGuid();
-            Number = number;
-            Street = street;
-            City = city;
-            Country = country;
+            var address = new Address()
+            {
+                Id = Guid.NewGuid(),
+                Number = number,
+                Street = street,
+                City = city,
+                Country = country,
+            };
+
+            return Result<Address>.Success(address);
         }
     }
 }

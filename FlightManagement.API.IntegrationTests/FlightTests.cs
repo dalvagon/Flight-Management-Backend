@@ -15,14 +15,14 @@ namespace FlightManagement.API.IntegrationTests
         private const string ApiUrl = "/api/v1/flights/";
 
         [Fact]
-        public void When_CreateFlight_Then_ShouldReturnFlight()
+        public async Task When_CreateFlight_Then_ShouldReturnFlight()
         {
             // Arrange
             var airportRepositoryMock = new Mock<IRepository<Airport>>();
             var flightRepositoryMock = new Mock<IRepository<Flight>>();
             var airport = CreateDepartureAirport();
-            airportRepositoryMock.Setup(p => p.Get(It.IsAny<Guid>()))
-                .Returns(airport);
+            airportRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(airport);
             var flightsController = new FlightsController(flightRepositoryMock.Object, airportRepositoryMock.Object);
             var flight = CreateFlight();
             var dto = new CreateFlightDto
@@ -41,7 +41,7 @@ namespace FlightManagement.API.IntegrationTests
             };
 
             // Act
-            var response = flightsController.Create(dto) as ObjectResult;
+            var response = await flightsController.Create(dto) as ObjectResult;
             var flightResponse = response.Value as Flight;
 
             // Assert
@@ -122,25 +122,25 @@ namespace FlightManagement.API.IntegrationTests
         public async Task When_GetFlight_Then_ShouldReturnFlight()
         {
             // Arrange
-            var passengers = CreatePassengers();
+            var flight = CreateFlight();
+            var passengers = CreatePassengersForFlight(flight);
+            Context.Flights.Add(flight);
             passengers.ForEach(passenger => Context.Passengers.Add(passenger));
-            Context.Flights.Add(passengers[0].Flight);
             Context.SaveChanges();
-            var flightId = passengers[0].Id;
 
             // Act
-            var responseMessage = await HttpClient.GetAsync(ApiUrl + flightId);
+            var responseMessage = await HttpClient.GetAsync(ApiUrl + flight.Id);
             var response = await responseMessage.Content.ReadFromJsonAsync<Flight>();
 
             // Assert
             responseMessage.EnsureSuccessStatusCode();
-            response.Passengers.Count.Should().Be(3);
+            responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
+            response?.Passengers.Count.Should().Be(3);
         }
 
-        private List<Passenger> CreatePassengers()
+        private List<Passenger> CreatePassengersForFlight(Flight flight)
         {
             var persons = CreatePersons();
-            var flight = CreateFlight();
             var baggages = CreateBaggages();
 
             var passengers = persons.Select(person =>
@@ -153,8 +153,8 @@ namespace FlightManagement.API.IntegrationTests
         {
             return new List<Baggage>
             {
-                new(10, 2, 1.5, 2),
-                new(5, 1.5, 4.5, 2),
+                Baggage.Create(10, 2, 1.5, 2).Entity,
+                Baggage.Create(5, 1.5, 4.5, 2).Entity
             };
         }
 
@@ -180,23 +180,32 @@ namespace FlightManagement.API.IntegrationTests
         private Airport CreateDepartureAirport()
         {
             var address = CreateAddress1();
-            return Airport.Create("Wizz Airport", address, "Bucharest").Entity;
+            return Airport.Create("Wizz Airport", address).Entity;
         }
 
         private Airport CreateDestinationAirport()
         {
             var address = CreateAddress2();
-            return Airport.Create("Suceava Airport", address, "Suceava").Entity;
+            return Airport.Create("Suceava Airport", address).Entity;
         }
 
         private Address CreateAddress1()
         {
-            return new Address("100", "Carol 1", "Bucharest", "Romania");
+            var country = CreateCountry();
+            var city = City.Create("Suceava", country).Entity;
+            return Address.Create("100", "Carol 1", city, country).Entity;
         }
 
         private Address CreateAddress2()
         {
-            return new Address("2087", "Mihai Eminescu", "Suceava", "Romania");
+            var country = CreateCountry();
+            var city = City.Create("Suceava", country).Entity;
+            return Address.Create("2087", "Mihai Eminescu", city, country).Entity;
+        }
+
+        private Country CreateCountry()
+        {
+            return Country.Create("Romania", "RO").Entity;
         }
 
         private List<Person> CreatePersons()

@@ -19,37 +19,37 @@ namespace FlightManagement.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult All()
+        public async Task<IActionResult> All()
         {
-            return Ok(_airportRepository.All());
+            return Ok(await (_airportRepository).AllAsync());
         }
 
         [HttpGet("{airportId:guid}")]
-        public IActionResult Get(Guid airportId)
+        public async Task<IActionResult> Get(Guid airportId)
         {
-            return Ok(_airportRepository.Get(airportId));
+            return Ok(await _airportRepository.GetAsync(airportId));
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] CreateAirportDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateAirportDto dto)
         {
-            var address = _addressRepository.Get(dto.AddressId);
+            var address = await _addressRepository.GetAsync(dto.AddressId);
 
-            var airport = Airport.Create(dto.Name, address, dto.City).Entity;
+            var airport = Airport.Create(dto.Name, address).Entity;
 
-            _airportRepository.Add(airport);
-            _airportRepository.SaveChanges();
+            await _airportRepository.AddAsync(airport);
+            _airportRepository.SaveChangesAsync();
 
             return Created(nameof(Get), airport);
         }
 
         [HttpDelete("{airportId:guid}")]
-        public IActionResult Delete(Guid airportId)
+        public async Task<IActionResult> Delete(Guid airportId)
         {
-            var airport = _airportRepository.Get(airportId);
+            var airport = await _airportRepository.GetAsync(airportId);
 
-            _airportRepository.Delete(airport);
-            _airportRepository.SaveChanges();
+            _airportRepository.DeleteAsync(airport);
+            _airportRepository.SaveChangesAsync();
 
             return NoContent();
         }

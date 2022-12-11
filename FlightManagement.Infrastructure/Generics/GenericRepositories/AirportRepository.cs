@@ -9,16 +9,24 @@ namespace FlightManagement.Infrastructure.Generics.GenericRepositories
         {
         }
 
-        public override Airport Get(Guid id)
+        public override Task<Airport> GetAsync(Guid id)
         {
-            return Context.Airports.Include(airport => airport.Address)
-                .Where(a => a.Id == id)
-                .FirstOrDefault();
+            return Context.Airports
+                .Include(airport => airport.Address)
+                .ThenInclude(a => a.Country)
+                .Include(a => a.Address)
+                .ThenInclude(a => a.City)
+                .FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public override IEnumerable<Airport> All()
+        public override async Task<IReadOnlyCollection<Airport>> AllAsync()
         {
-            return Context.Airports.Include(airport => airport.Address).ToList();
+            return await Context.Airports
+                .Include(airport => airport.Address)
+                .ThenInclude(a => a.Country)
+                .Include(a => a.Address)
+                .ThenInclude(a => a.City)
+                .ToListAsync();
         }
     }
 }

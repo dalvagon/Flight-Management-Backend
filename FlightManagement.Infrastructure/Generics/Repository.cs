@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlightManagement.Infrastructure.Generics
 {
@@ -11,39 +12,41 @@ namespace FlightManagement.Infrastructure.Generics
             Context = context;
         }
 
-        public virtual T Add(T entity)
+        public virtual async Task<T> AddAsync(T entity)
         {
-            return Context.Add(entity).Entity;
+            await Context.AddAsync(entity);
+
+            return entity;
         }
 
-        public virtual IEnumerable<T> Find(Expression<Func<T, bool>> predicate)
+        public virtual async Task<IReadOnlyCollection<T>> FindAsync(Expression<Func<T, bool>> predicate)
         {
-            return Context.Set<T>().AsQueryable().Where(predicate).ToList();
+            return await Context.Set<T>().AsQueryable().Where(predicate).ToListAsync();
         }
 
-        public virtual T Get(Guid id)
+        public virtual async Task<T> GetAsync(Guid id)
         {
-            return Context.Find<T>(id);
+            return await Context.FindAsync<T>(id);
         }
 
-        public virtual IEnumerable<T> All()
+        public virtual async Task<IReadOnlyCollection<T>> AllAsync()
         {
-            return Context.Set<T>().ToList();
+            return await Context.Set<T>().ToListAsync();
         }
 
-        public virtual T Update(T entity)
+        public virtual async Task<T> UpdateAsync(T entity)
         {
             return Context.Update(entity).Entity;
         }
 
-        public virtual void Delete(T entity)
+        public virtual async void DeleteAsync(T entity)
         {
             Context.Remove(entity);
         }
 
-        public void SaveChanges()
+        public async void SaveChangesAsync()
         {
-            Context.SaveChanges();
+            await Context.SaveChangesAsync();
         }
     }
 }

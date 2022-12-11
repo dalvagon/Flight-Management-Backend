@@ -1,15 +1,16 @@
-﻿using FlightManagement.Domain.Helpers;
+﻿using System.Text.Json.Serialization;
+using FlightManagement.Domain.Helpers;
 
 namespace FlightManagement.Domain.Entities
 {
     public class Passenger
     {
-        public Guid Id { get; private set; }
-        public Person Person { get; private set; }
-        public Flight Flight { get; private set; }
-        public double Weight { get; private set; }
-        public List<Allergy> Allergies { get; private set; } = new();
-        public List<Baggage> Baggages { get; private set; } = new();
+        [JsonInclude] public Guid Id { get; private set; }
+        [JsonInclude] public Person Person { get; private set; }
+        [JsonInclude] public Flight Flight { get; private set; }
+        [JsonInclude] public double Weight { get; private set; }
+        [JsonInclude] public List<Allergy> Allergies { get; private set; } = new();
+        [JsonInclude] public List<Baggage> Baggages { get; private set; } = new();
 
         public static Result<Passenger> Create(Person person, Flight flight, double weight, List<Baggage> baggages,
             List<Allergy> allergies)

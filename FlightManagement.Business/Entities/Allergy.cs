@@ -1,14 +1,23 @@
-﻿namespace FlightManagement.Domain.Entities
+﻿using System.Text.Json.Serialization;
+using FlightManagement.Domain.Helpers;
+
+namespace FlightManagement.Domain.Entities
 {
     public class Allergy
     {
-        public Guid Id { get; private set; }
-        public string Name { get; private set; }
+        [JsonInclude] public Guid Id { get; private set; }
+        [JsonInclude] public string Name { get; private set; }
 
-        public Allergy(string name)
+
+        public static Result<Allergy> Create(string name)
         {
-            Id = Guid.NewGuid();
-            Name = name;
+            var alelrgy = new Allergy()
+            {
+                Id = Guid.NewGuid(),
+                Name = name,
+            };
+
+            return Result<Allergy>.Success(alelrgy);
         }
     }
 }

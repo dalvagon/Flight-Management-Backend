@@ -9,18 +9,19 @@ namespace FlightManagement.Infrastructure.Generics.GenericRepositories
         {
         }
 
-        public override Baggage Get(Guid id)
+        public override Task<Baggage> GetAsync(Guid id)
         {
-            return Context.Baggages.Include(b => b.Passenger).ThenInclude(p => p.Person)
+            return Context.Baggages.Include(b => b.Passenger)
+                .ThenInclude(p => p.Person)
                 .IgnoreAutoIncludes()
-                .Where(b => b.Id == id)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
 
-        public override IEnumerable<Baggage> All()
+        public override async Task<IReadOnlyCollection<Baggage>> AllAsync()
         {
-            return Context.Baggages.Include(b => b.Passenger).ThenInclude(p => p.Person)
-                .IgnoreAutoIncludes().ToList();
+            return await Context.Baggages.Include(b => b.Passenger)
+                .ThenInclude(p => p.Person)
+                .ToListAsync();
         }
     }
 }
