@@ -1,26 +1,25 @@
 ﻿using FlightManagement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace FlightManagement.Infrastructure.Generics.GenericRepositories
+namespace FlightManagement.Infrastructure.Generics.GenericRepositories;
+
+public class PersonRepository : Repository<Person>
 {
-    public class PersonRepository : Repository<Person>
+    public PersonRepository(DatabaseContext context) : base(context)
     {
-        public PersonRepository(DatabaseContext context) : base(context)
-        {
-        }
+    }
 
-        public override Task<Person> GetAsync(Guid id)
-        {
-            return Context.People
-                .Include(p => p.Address)
-                .FirstOrDefaultAsync(p => p.Id == id);
-        }
+    public override Task<Person?> GetAsync(Guid id)
+    {
+        return Context.People
+            .Include(p => p.Address)
+            .FirstOrDefaultAsync(p => p.Id == id);
+    }
 
-        public override async Task<IReadOnlyCollection<Person>> AllAsync()
-        {
-            return await Context.People
-                .Include(p => p.Address)
-                .ToListAsync();
-        }
+    public override async Task<IReadOnlyCollection<Person>> AllAsync()
+    {
+        return await Context.People
+            .Include(p => p.Address)
+            .ToListAsync();
     }
 }

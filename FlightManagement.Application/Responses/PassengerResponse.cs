@@ -1,12 +1,13 @@
-﻿namespace FlightManagement.Application.Responses
+﻿using FlightManagement.Domain.Entities;
+
+namespace FlightManagement.Application.Responses;
+
+public class PassengerResponse
 {
-    public class PassengerResponse
-    {
-        public Guid Id { get; private set; }
-        public PersonResponse Person { get; private set; }
-        public FlightResponse Flight { get; private set; }
-        public double Weight { get; private set; }
-        public List<AllergyResponse> Allergies { get; private set; } = new();
-        public List<BaggageResponse> Baggages { get; private set; } = new();
-    }
+    public Guid Id { get; private set; }
+    public Person Person { get; private set; }
+    public Flight Flight { get; private set; }
+    public double Weight { get; private set; }
+    public List<Allergy> Allergies { get; } = new();
+    public List<Baggage> Baggages { get; } = new();
 }

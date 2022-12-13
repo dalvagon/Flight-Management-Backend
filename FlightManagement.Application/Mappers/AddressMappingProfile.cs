@@ -3,14 +3,13 @@ using FlightManagement.Application.Commands;
 using FlightManagement.Application.Responses;
 using FlightManagement.Domain.Entities;
 
-namespace FlightManagement.Application.Mappers
+namespace FlightManagement.Application.Mappers;
+
+public class AddressMappingProfile : Profile
 {
-    public class AddressMappingProfile : Profile
+    public AddressMappingProfile()
     {
-        public AddressMappingProfile()
-        {
-            CreateMap<Address, AddressResponse>().ReverseMap();
-            CreateMap<Address, CreateAddressCommand>().ReverseMap();
-        }
+        CreateMap<Address, AddressResponse>().ReverseMap();
+        CreateMap<Address, CreateAddressCommand>().ReverseMap();
     }
 }

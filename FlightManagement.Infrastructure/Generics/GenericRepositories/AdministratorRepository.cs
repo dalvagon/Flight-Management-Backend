@@ -1,11 +1,10 @@
 ﻿using FlightManagement.Domain.Entities;
 
-namespace FlightManagement.Infrastructure.Generics.GenericRepositories
+namespace FlightManagement.Infrastructure.Generics.GenericRepositories;
+
+public class AdministratorRepository : Repository<Administrator>
 {
-    public class AdministratorRepository : Repository<Administrator>
+    public AdministratorRepository(DatabaseContext context) : base(context)
     {
-        public AdministratorRepository(DatabaseContext context) : base(context)
-        {
-        }
     }
 }

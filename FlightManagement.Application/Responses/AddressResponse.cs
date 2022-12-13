@@ -1,11 +1,12 @@
-﻿namespace FlightManagement.Application.Responses
+﻿using FlightManagement.Domain.Entities;
+
+namespace FlightManagement.Application.Responses;
+
+public class AddressResponse
 {
-    public class AddressResponse
-    {
-        public Guid Id { get; private set; }
-        public string Number { get; private set; }
-        public string Street { get; private set; }
-        public CityResponse City { get; private set; }
-        public CountryResponse Country { get; private set; }
-    }
+    public Guid Id { get; private set; }
+    public string Number { get; private set; }
+    public string Street { get; private set; }
+    public City City { get; private set; }
+    public Country Country { get; private set; }
 }

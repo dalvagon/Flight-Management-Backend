@@ -1,8 +1,7 @@
-﻿namespace FlightManagement.Domain.Entities
+﻿namespace FlightManagement.Domain.Entities;
+
+public enum Gender
 {
-    public enum Gender
-    {
-        Male = 0,
-        Female = 1
-    }
+    Male = 0,
+    Female = 1
 }

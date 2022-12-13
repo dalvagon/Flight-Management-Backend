@@ -1,13 +1,13 @@
 ﻿using FlightManagement.Application.Responses;
+using FlightManagement.Domain.Entities;
 using MediatR;
 
-namespace FlightManagement.Application.Commands
+namespace FlightManagement.Application.Commands;
+
+public class CreateAddressCommand : IRequest<AddressResponse>
 {
-    public class CreateAddressCommand : IRequest<AddressResponse>
-    {
-        public string Number { get; private set; }
-        public string Street { get; private set; }
-        public CityResponse City { get; private set; }
-        public CountryResponse Country { get; private set; }
-    }
+    public string Number { get; set; }
+    public string Street { get; set; }
+    public City City { get; set; }
+    public Country Country { get; set; }
 }

@@ -5,28 +5,24 @@ using FlightManagement.Domain.Entities;
 using FlightManagement.Infrastructure.Generics;
 using MediatR;
 
-namespace FlightManagement.Application.Handlers
+namespace FlightManagement.Application.Handlers;
+
+public class CreateAddressCommandHandler : IRequestHandler<CreateAddressCommand, AddressResponse>
 {
-    public class CreateAddressCommandHandler : IRequestHandler<CreateAddressCommand, AddressResponse>
+    private readonly IRepository<Address> _addressRepository;
+
+    public CreateAddressCommandHandler(IRepository<Address> addressRepository)
     {
-        private readonly IRepository<Address> _addressRepository;
+        _addressRepository = addressRepository;
+    }
 
-        public CreateAddressCommandHandler(IRepository<Address> addressRepository)
-        {
-            _addressRepository = addressRepository;
-        }
+    public async Task<AddressResponse> Handle(CreateAddressCommand request, CancellationToken cancellationToken)
+    {
+        var address = AddressMapper.Mapper.Map<Address>(request);
+        if (address == null) throw new ApplicationException("Issue with mapper");
 
-        public async Task<AddressResponse> Handle(CreateAddressCommand request, CancellationToken cancellationToken)
-        {
-            var address = GenericMapper<Address>.Mapper.Map<Address>(request);
-            if (address == null)
-            {
-                throw new ApplicationException("Issue with mapper");
-            }
+        var newAddress = await _addressRepository.AddAsync(address);
 
-            var newAddress = await _addressRepository.AddAsync(address);
-
-            return GenericMapper<Address>.Mapper.Map<AddressResponse>(newAddress);
-        }
+        return AddressMapper.Mapper.Map<AddressResponse>(newAddress);
     }
 }
