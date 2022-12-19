@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManagement.API.Controllers;
 
-[Route("api/v1/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[ApiVersion("1.0")]
 public class CountriesController : ControllerBase
 {
     private readonly IRepository<Country> _countryRepository;
@@ -21,12 +22,7 @@ public class CountriesController : ControllerBase
     {
         var countries = await _countryRepository.AllAsync();
         countries = countries.OrderBy(c => c.Name).ToImmutableList();
-        return Ok(countries);
-    }
 
-    [HttpGet("{countryId:guid}")]
-    public async Task<IActionResult> Get(Guid countryId)
-    {
-        return Ok(await _countryRepository.GetAsync(countryId));
+        return Ok(countries);
     }
 }

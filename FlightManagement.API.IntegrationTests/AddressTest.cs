@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using FlightManagement.API.Controllers;
-using FlightManagement.API.Dtos;
+using FlightManagement.Application.Commands;
 using FlightManagement.Domain.Entities;
 using FluentAssertions;
 
@@ -20,7 +20,7 @@ public class AddressTest : BaseIntegrationTests<AddressesController>
         await Context.Cities.AddAsync(address.City);
         await Context.SaveChangesAsync();
 
-        var dto = new CreateAddressDto
+        var dto = new CreateAddressCommand()
         {
             Number = address.Number,
             Street = address.Street,

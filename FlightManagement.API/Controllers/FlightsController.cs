@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManagement.API.Controllers;
 
-[Route("api/v1/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[ApiVersion("1.0")]
 public class FlightsController : ControllerBase
 {
     private readonly IRepository<Airport> _airportRepository;
@@ -22,6 +23,12 @@ public class FlightsController : ControllerBase
         _airportRepository = airportRepository;
     }
 
+    [HttpGet("all")]
+    public async Task<IActionResult> All()
+    {
+        return Ok(await _flightRepository.AllAsync());
+    }
+
     [HttpGet]
     public async Task<IActionResult> AllFromDepartureAndDestinationCities([FromQuery] string departureCity,
         [FromQuery] string destinationCity)
@@ -32,7 +39,7 @@ public class FlightsController : ControllerBase
     }
 
     [HttpGet("{flightId:guid}")]
-    public async Task<IActionResult> All(Guid flightId)
+    public async Task<IActionResult> Get(Guid flightId)
     {
         return Ok(await _flightRepository.GetAsync(flightId));
     }
@@ -54,20 +61,16 @@ public class FlightsController : ControllerBase
                 dto.MaxBaggageWidth,
                 dto.MaxBaggageHeight,
                 dto.MaxBaggageLength,
-                departureAirport,
-                destinationAirport
+                departureAirport!,
+                destinationAirport!
             );
 
-        if (result.IsFailure) return BadRequest(result.Error);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
 
         var flight = result.Entity!;
-        var validator = new FlightValidator();
-        var validatorResult = validator.Validate(flight);
-
-        if (!validatorResult.IsValid)
-        {
-            return BadRequest("Couldn't create flight");
-        }
 
         await _flightRepository.AddAsync(flight);
         _flightRepository.SaveChangesAsync();

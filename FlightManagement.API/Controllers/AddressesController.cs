@@ -1,49 +1,42 @@
-﻿using FlightManagement.API.Dtos;
-using FlightManagement.Domain.Entities;
-using FlightManagement.Infrastructure.Generics;
+﻿using FlightManagement.Application.Commands;
+using FlightManagement.Application.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManagement.API.Controllers;
 
-[Route("api/v1/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[ApiVersion("1.0")]
 public class AddressesController : ControllerBase
 {
-    private readonly IRepository<Address> _addressRepository;
-    private readonly IRepository<City> _cityRepository;
-    private readonly IRepository<Country> _countryRepository;
+    private readonly IMediator _mediator;
 
-    public AddressesController(IRepository<Address> addressRepository,
-        IRepository<Country> countryRepository,
-        IRepository<City> cityRepository)
+    public AddressesController(IMediator mediator)
     {
-        _addressRepository = addressRepository;
-        _countryRepository = countryRepository;
-        _cityRepository = cityRepository;
+        _mediator = mediator;
     }
 
     [HttpGet]
     public async Task<IActionResult> All()
     {
-        return Ok(await _addressRepository.AllAsync());
+        var addresses = await _mediator.Send(new GetAllAddressesQuery());
+
+        return Ok(addresses);
     }
 
     [HttpGet("{addressId:guid}")]
     public async Task<IActionResult> Get(Guid addressId)
     {
-        return Ok(await _addressRepository.GetAsync(addressId));
+        var address = await _mediator.Send(new GetAddressCommand() { AddressId = addressId });
+
+        return Ok(address);
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateAsync([FromBody] CreateAddressDto dto)
+    public async Task<IActionResult> CreateAsync([FromBody] CreateAddressCommand command)
     {
-        var country = await _countryRepository.GetAsync(dto.CountryId);
-        var city = await _cityRepository.GetAsync(dto.CityId);
-
-        var address = Address.Create(dto.Number, dto.Street, city, country).Entity!;
-
-        await _addressRepository.AddAsync(address);
-        _addressRepository.SaveChangesAsync();
+        var address = await _mediator.Send(command);
 
         return Created(nameof(Get), address);
     }
@@ -51,10 +44,7 @@ public class AddressesController : ControllerBase
     [HttpDelete("{addressId:guid}")]
     public async Task<IActionResult> Delete(Guid addressId)
     {
-        var address = await _addressRepository.GetAsync(addressId);
-
-        _addressRepository.Delete(address);
-        _addressRepository.SaveChangesAsync();
+        await _mediator.Send(new DeleteAddressCommand() { AddressId = addressId });
 
         return NoContent();
     }

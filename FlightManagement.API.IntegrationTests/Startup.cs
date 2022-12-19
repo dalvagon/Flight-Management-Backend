@@ -1,10 +1,12 @@
 ﻿using System.Data.Common;
+using FlightManagement.Application;
 using FlightManagement.Domain.Entities;
 using FlightManagement.Infrastructure;
 using FlightManagement.Infrastructure.Generics;
 using FlightManagement.Infrastructure.Generics.GenericRepositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +26,27 @@ public class Startup<T> : WebApplicationFactory<T> where T : class
         services.AddControllers().AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         );
+
+
+        services.AddApiVersioning(o =>
+        {
+            o.AssumeDefaultVersionWhenUnspecified = true;
+            o.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+            o.ReportApiVersions = true;
+            o.ApiVersionReader = ApiVersionReader.Combine
+            (
+                new QueryStringApiVersionReader("api-version"),
+                new HeaderApiVersionReader("X-version"),
+                new MediaTypeApiVersionReader("ver")
+            );
+        });
+
+        services.AddVersionedApiExplorer(
+            options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
 
         services.AddSingleton<DbConnection>(container =>
         {
@@ -49,6 +72,8 @@ public class Startup<T> : WebApplicationFactory<T> where T : class
         services.AddScoped<IRepository<Flight>, FlightRepository>();
         services.AddScoped<IRepository<Passenger>, PassengerRepository>();
         services.AddScoped<IRepository<Person>, PersonRepository>();
+
+        services.AddAppServices();
     }
 
     public void Configure(IApplicationBuilder app)

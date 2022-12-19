@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManagement.API.Controllers;
 
-[Route("api/v1/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[ApiVersion("1.0")]
 public class BaggagesController : ControllerBase
 {
     private readonly IRepository<Baggage> _baggageRepository;

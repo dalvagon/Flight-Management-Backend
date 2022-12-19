@@ -22,14 +22,12 @@ public class FlightRepository : Repository<Flight>
 
     public override async Task<IReadOnlyCollection<Flight>> FindAsync(Expression<Func<Flight, bool>> predicate)
     {
-        var countries = Context.Flights.Include(f => f.Passengers).ThenInclude(p => p.Person)
+        return await Context.Flights.Include(f => f.Passengers).ThenInclude(p => p.Person)
             .Include(f => f.Passengers).ThenInclude(p => p.Baggages)
             .Include(f => f.DepartureAirport).ThenInclude(a => a.Address).ThenInclude(a => a.City)
             .Include(f => f.DestinationAirport).ThenInclude(a => a.Address).ThenInclude(a => a.City)
             .Include(f => f.IntermediateStops).ThenInclude(a => a.Address)
-            .Where(predicate);
-
-        return await countries.ToListAsync();
+            .Where(predicate).ToListAsync();
     }
 
     public override async Task<IReadOnlyCollection<Flight>> AllAsync()

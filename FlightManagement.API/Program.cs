@@ -1,8 +1,6 @@
-using FlightManagement.Domain.Entities;
+using FlightManagement.Application;
 using FlightManagement.Infrastructure;
-using FlightManagement.Infrastructure.Generics;
-using FlightManagement.Infrastructure.Generics.GenericRepositories;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,28 +10,33 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore
 );
 
+
+builder.Services.AddApiVersioning(o =>
+{
+    o.AssumeDefaultVersionWhenUnspecified = true;
+    o.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+    o.ReportApiVersions = true;
+    o.ApiVersionReader = ApiVersionReader.Combine
+    (
+        new QueryStringApiVersionReader("api-version"),
+        new HeaderApiVersionReader("X-version"),
+        new MediaTypeApiVersionReader("ver")
+    );
+});
+
+builder.Services.AddVersionedApiExplorer(
+    options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-
-builder.Services.AddDbContext<DatabaseContext>(
-    options => options.UseSqlite(
-        builder.Configuration.GetConnectionString("FlightManagement.db"),
-        b => b.MigrationsAssembly(typeof(DatabaseContext).Assembly.FullName)));
-
-builder.Services.AddScoped<IRepository<Address>, AddressRepository>();
-builder.Services.AddScoped<IRepository<Administrator>, AdministratorRepository>();
-builder.Services.AddScoped<IRepository<Airport>, AirportRepository>();
-builder.Services.AddScoped<IRepository<Allergy>, AllergyRepository>();
-builder.Services.AddScoped<IRepository<Baggage>, BaggageRepository>();
-builder.Services.AddScoped<IRepository<Company>, CompanyRepository>();
-builder.Services.AddScoped<IRepository<Flight>, FlightRepository>();
-builder.Services.AddScoped<IRepository<Passenger>, PassengerRepository>();
-builder.Services.AddScoped<IRepository<Person>, PersonRepository>();
-builder.Services.AddScoped<IRepository<Country>, CountryRepository>();
-builder.Services.AddScoped<IRepository<City>, CityRepository>();
-
+builder.Services.AddAppServices();
+builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddHealthChecks();
 
 builder.Services.AddCors(options =>
 {
@@ -45,6 +48,7 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+app.UseHealthChecks("/health");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

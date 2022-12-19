@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManagement.API.Controllers;
 
-[Route("api/v1/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[ApiVersion("1.0")]
 public class PassengersController : ControllerBase
 {
     private readonly IRepository<Allergy> _allergyRepository;
@@ -60,7 +61,7 @@ public class PassengersController : ControllerBase
 
         dto.AllergyIds!.ForEach(Action);
 
-        var result = Passenger.Create(person, flight, dto.Weight, baggages, allergies);
+        var result = Passenger.Create(person!, flight!, dto.Weight, baggages, allergies);
         if (result.IsFailure) return BadRequest(result.Error);
 
         var passenger = result.Entity!;
@@ -75,12 +76,7 @@ public class PassengersController : ControllerBase
     {
         var passenger = await _passengerRepository.GetAsync(passengerId);
 
-        if (passenger == null)
-        {
-            return BadRequest("Passenger not found");
-        }
-
-        _passengerRepository.Delete(passenger);
+        _passengerRepository.Delete(passenger!);
         _passengerRepository.SaveChangesAsync();
 
         return NoContent();

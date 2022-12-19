@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManagement.API.Controllers;
 
-[Route("api/v1/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[ApiVersion("1.0")]
 public class PeopleController : ControllerBase
 {
     private readonly IRepository<Address> _addressRepository;
@@ -35,8 +36,8 @@ public class PeopleController : ControllerBase
         var country = await _countryRepository.GetAsync(dto.AddressDto.CountryId);
         var city = await _cityRepository.GetAsync(dto.AddressDto.CityId);
 
-        var address = Address.Create(dto.AddressDto.Number, dto.AddressDto.Street, city,
-            country).Entity!;
+        var address = Address.Create(dto.AddressDto.Number, dto.AddressDto.Street, city!,
+            country!).Entity!;
         var result = Person.Create(dto.Name, dto.Surname, dto.DateOfBirth, dto.Gender, address);
         if (result.IsFailure) return BadRequest(result.Error);
 
@@ -54,7 +55,7 @@ public class PeopleController : ControllerBase
     {
         var person = await _personRepository.GetAsync(personId);
 
-        _personRepository.Delete(person);
+        _personRepository.Delete(person!);
         _personRepository.SaveChangesAsync();
 
         return NoContent();
