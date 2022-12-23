@@ -1,12 +1,10 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using FlightManagement.API.Controllers;
-using FlightManagement.API.Dtos;
+using FlightManagement.Application.Commands;
+using FlightManagement.Application.Mappers;
 using FlightManagement.Domain.Entities;
-using FlightManagement.Infrastructure.Generics;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
 
 namespace FlightManagement.API.IntegrationTests;
 
@@ -15,239 +13,7 @@ public class PassengerTests : BaseIntegrationTests<PassengersController>
     private const string ApiUrl = "/api/v1/passengers/";
 
     [Fact]
-    public async Task When_CreatePassenger_Then_ShouldReturnPassenger()
-    {
-        var passengerRepositoryMock = new Mock<IRepository<Passenger>>();
-        var personRepositoryMock = new Mock<IRepository<Person>>();
-        var flightRepositoryMock = new Mock<IRepository<Flight>>();
-        var allergyRepositoryMock = new Mock<IRepository<Allergy>>();
-        var flight = CreateFlight();
-        var person = CreatePersons()[0];
-        var baggages = CreateBaggages();
-
-        var passengersController = new PassengersController(passengerRepositoryMock.Object,
-            personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object);
-
-        flightRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>()))
-            .ReturnsAsync(flight);
-        personRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>()))
-            .ReturnsAsync(person);
-
-        var dto = new CreatePassengerDto
-        {
-            FlightId = flight.Id,
-            PersonId = person.Id,
-            Weight = 80,
-            BaggageDtos = baggages.Select(baggage => new CreateBaggageDto
-            {
-                Width = baggage.Width,
-                Height = baggage.Height,
-                Length = baggage.Length,
-                Weight = baggage.Weight
-            }).ToList(),
-            AllergyIds = new List<Guid>()
-        };
-
-        // Act
-        var response = await passengersController.Create(dto) as ObjectResult;
-        var passengerResponse = response!.Value as Passenger;
-
-        // Assert
-        passengerResponse!.Flight.Should().Be(flight);
-        passengerResponse.Person.Should().Be(person);
-        passengerResponse.Weight.Should().Be(80);
-        passengerResponse.Allergies.Should().HaveCount(0);
-        passengerResponse.Baggages.Should().HaveCount(2);
-    }
-
-    [Fact]
-    public async Task When_CreatePassengerThatCarriesWeightAboveTheLimit_Then_ShouldReturnBadRequest()
-    {
-        var passengerRepositoryMock = new Mock<IRepository<Passenger>>();
-        var personRepositoryMock = new Mock<IRepository<Person>>();
-        var flightRepositoryMock = new Mock<IRepository<Flight>>();
-        var allergyRepositoryMock = new Mock<IRepository<Allergy>>();
-        var flight = CreateFlight();
-        var person = CreatePersons()[0];
-        var baggages = new List<Baggage>
-        {
-            Baggage.Create(5, 2, 4, 1).Entity!,
-            Baggage.Create(10, 2, 2.5, 1.5).Entity!,
-            Baggage.Create(6, 1.5, 4.5, 2).Entity!
-        };
-
-        var passengersController = new PassengersController(passengerRepositoryMock.Object,
-            personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object);
-
-        flightRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>()))
-            .ReturnsAsync(flight);
-        personRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>())).ReturnsAsync(person);
-
-        var dto = new CreatePassengerDto
-        {
-            FlightId = flight.Id,
-            PersonId = person.Id,
-            Weight = 80,
-            BaggageDtos = baggages.Select(baggage => new CreateBaggageDto
-            {
-                Width = baggage.Width,
-                Height = baggage.Height,
-                Length = baggage.Length,
-                Weight = baggage.Weight
-            }).ToList(),
-            AllergyIds = new List<Guid>()
-        };
-
-        // Act
-        var response = await passengersController.Create(dto) as ObjectResult;
-
-        // Assert
-        response!.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        response.Value.Should()
-            .Be($"Person with id {person.Id} carries weight above the limit 20");
-    }
-
-    [Fact]
-    public async Task When_CreatePassengerTwiceForTheSameFlight_Then_ShouldReturnBadRequest()
-    {
-        var passengerRepositoryMock = new Mock<IRepository<Passenger>>();
-        var personRepositoryMock = new Mock<IRepository<Person>>();
-        var flightRepositoryMock = new Mock<IRepository<Flight>>();
-        var allergyRepositoryMock = new Mock<IRepository<Allergy>>();
-        var flight = CreateFlight();
-        var person = CreatePersons()[0];
-        var baggages = CreateBaggages();
-
-        var passengersController = new PassengersController(passengerRepositoryMock.Object,
-            personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object);
-
-        flightRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>()))
-            .ReturnsAsync(flight);
-        personRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>()))
-            .ReturnsAsync(person);
-
-        var dto = new CreatePassengerDto
-        {
-            FlightId = flight.Id,
-            PersonId = person.Id,
-            Weight = 80,
-            BaggageDtos = baggages.Select(baggage => new CreateBaggageDto
-            {
-                Width = baggage.Width,
-                Height = baggage.Height,
-                Length = baggage.Length,
-                Weight = baggage.Weight
-            }).ToList(),
-            AllergyIds = new List<Guid>()
-        };
-
-        // Act
-        await passengersController.Create(dto);
-        var response = await passengersController.Create(dto) as ObjectResult;
-
-        // Assert
-        response!.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        response.Value.Should()
-            .Be(
-                $"Person with id {person.Id} is already a passenger in flight with id {flight.Id}");
-    }
-
-    [Fact]
-    public async Task When_CreatePassengerWithBaggageWithWeightAboveTheLimit_Then_ShouldReturnBadRequest()
-    {
-        var passengerRepositoryMock = new Mock<IRepository<Passenger>>();
-        var personRepositoryMock = new Mock<IRepository<Person>>();
-        var flightRepositoryMock = new Mock<IRepository<Flight>>();
-        var allergyRepositoryMock = new Mock<IRepository<Allergy>>();
-        var flight = CreateFlight();
-        var person = CreatePersons()[0];
-        var baggages = new List<Baggage>
-        {
-            Baggage.Create(4, 2, 4, 2).Entity!,
-            Baggage.Create(11, 2, 2.5, 1.5).Entity!,
-            Baggage.Create(5, 1.5, 4.5, 2).Entity!
-        };
-
-        var passengersController = new PassengersController(passengerRepositoryMock.Object,
-            personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object);
-
-        flightRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>())).ReturnsAsync(flight);
-        personRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>())).ReturnsAsync(person);
-
-        var dto = new CreatePassengerDto
-        {
-            FlightId = flight.Id,
-            PersonId = person.Id,
-            Weight = 80,
-            BaggageDtos = baggages.Select(baggage => new CreateBaggageDto
-            {
-                Width = baggage.Width,
-                Height = baggage.Height,
-                Length = baggage.Length,
-                Weight = baggage.Weight
-            }).ToList(),
-            AllergyIds = new List<Guid>()
-        };
-
-        // Act
-        var response = await passengersController.Create(dto) as ObjectResult;
-
-        // Assert
-        response!.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        response.Value.Should()
-            .Be(
-                $"Person with id {person.Id} carries a baggage with the weight above the limit of {flight.MaxWeightPerBaggage}");
-    }
-
-    [Fact]
-    public async Task When_CreatePassengerWithBaggageWithDimensionsAboveTheLimit_Then_ShouldReturnBadRequest()
-    {
-        var passengerRepositoryMock = new Mock<IRepository<Passenger>>();
-        var personRepositoryMock = new Mock<IRepository<Person>>();
-        var flightRepositoryMock = new Mock<IRepository<Flight>>();
-        var allergyRepositoryMock = new Mock<IRepository<Allergy>>();
-        var flight = CreateFlight();
-        var person = CreatePersons()[0];
-        var baggages = new List<Baggage>
-        {
-            Baggage.Create(4, 2, 4, 10).Entity !,
-            Baggage.Create(10, 2, 2.5, 1.5).Entity !,
-            Baggage.Create(5, 1.5, 4.5, 2).Entity !
-        };
-
-        var passengersController = new PassengersController(passengerRepositoryMock.Object,
-            personRepositoryMock.Object, flightRepositoryMock.Object, allergyRepositoryMock.Object);
-
-        flightRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>())).ReturnsAsync(flight);
-        personRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>())).ReturnsAsync(person);
-
-        var dto = new CreatePassengerDto
-        {
-            FlightId = flight.Id,
-            PersonId = person.Id,
-            Weight = 80,
-            BaggageDtos = baggages.Select(baggage => new CreateBaggageDto
-            {
-                Width = baggage.Width,
-                Height = baggage.Height,
-                Length = baggage.Length,
-                Weight = baggage.Weight
-            }).ToList(),
-            AllergyIds = new List<Guid>()
-        };
-
-        // Act
-        var response = await passengersController.Create(dto) as ObjectResult;
-
-        // Assert
-        response!.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        response.Value.Should()
-            .Be(
-                $"Person with id {person.Id} carries a baggage that has dimensions above the limit of {flight.MaxBaggageWidth} - {flight.MaxBaggageHeight} - {flight.MaxBaggageLength}");
-    }
-
-    [Fact]
-    public async Task When_GetPassengersForFlights_Then_ShouldReturnPassengers()
+    public async Task WhenGetPassengersForFlight_Then_ShouldReturnPassengers()
     {
         // Arrange
         var passenger = CreatePassengers()[0];
@@ -265,7 +31,7 @@ public class PassengerTests : BaseIntegrationTests<PassengersController>
 
 
     [Fact]
-    public async Task When_GetPassenger_Then_ShouldReturnPassenger()
+    public async Task WhenGetPassenger_Then_ShouldReturnPassenger()
     {
         // Arrange
         var passengers = CreatePassengers();
@@ -285,7 +51,7 @@ public class PassengerTests : BaseIntegrationTests<PassengersController>
     }
 
     [Fact]
-    public async Task When_DeletePassenger_Then_ShouldDeletePassenger()
+    public async Task WhenDeletePassenger_Then_ShouldDeletePassenger()
     {
         // Arrange
         var passenger = CreatePassengers()[0];
@@ -298,6 +64,40 @@ public class PassengerTests : BaseIntegrationTests<PassengersController>
         // Assert
         responseMessage.EnsureSuccessStatusCode();
         responseMessage.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task WhenCreatePassenger_Then_ShouldReturnPassenger()
+    {
+        // Arrange
+        var passenger = CreatePassengers()[0];
+        var flight = CreateFlight();
+        await Context.Countries.AddAsync(passenger.Person.Address.Country);
+        await Context.Cities.AddAsync(passenger.Person.Address.City);
+        await Context.Addresses.AddAsync(passenger.Person.Address);
+        await Context.Flights.AddAsync(flight);
+        await Context.Allergies.AddRangeAsync(passenger.Allergies);
+        await Context.People.AddAsync(passenger.Person);
+        await Context.SaveChangesAsync();
+        var command = new CreatePassengerCommand()
+        {
+            PersonId = passenger.Person.Id,
+            FlightId = flight.Id,
+            Weight = passenger.Weight,
+            Baggages = passenger.Baggages.Select(b => BaggageMapper.Mapper.Map<CreateBaggageCommand>(b)).ToList(),
+            AllergyIds = passenger.Allergies.Select(a => a.Id).ToList()
+        };
+
+        // Act
+        var result = await HttpClient.PostAsJsonAsync(ApiUrl, command);
+        var passengerResult = await result.Content.ReadFromJsonAsync<Passenger>();
+
+        // Assert
+        result.EnsureSuccessStatusCode();
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+        passengerResult!.Person.Name.Should().Be(passenger.Person.Name);
+        passengerResult.Allergies.Count.Should().Be(2);
+        passengerResult.Baggages.Count.Should().Be(2);
     }
 
     private static List<Passenger> CreatePassengers()

@@ -8,7 +8,7 @@ namespace FlightManagement.Business.Tests
     public class AdministratorTests
     {
         [Fact]
-        public void When_AddPassengersToFlight_Then_ShouldReturnSuccess()
+        public void WhenAddPassengersToFlight_Then_ShouldReturnSuccess()
         {
             // Arrange
             var result = CreateAdministrator();

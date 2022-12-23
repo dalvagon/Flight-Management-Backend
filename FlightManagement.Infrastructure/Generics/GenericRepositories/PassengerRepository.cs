@@ -1,4 +1,5 @@
-﻿using FlightManagement.Domain.Entities;
+﻿using System.Linq.Expressions;
+using FlightManagement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlightManagement.Infrastructure.Generics.GenericRepositories;
@@ -13,6 +14,7 @@ public class PassengerRepository : Repository<Passenger>
     {
         return Context.Passengers
             .Include(p => p.Person)
+            .Include(p => p.Person).ThenInclude(p => p.Address)
             .Include(p => p.Flight)
             .Include(p => p.Allergies)
             .Include(p => p.Baggages)

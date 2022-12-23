@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using FlightManagement.API.Controllers;
 using FlightManagement.Application.Commands;
+using FlightManagement.Application.Queries;
 using FlightManagement.Domain.Entities;
 using FluentAssertions;
 
@@ -80,6 +81,35 @@ public class AddressTest : BaseIntegrationTests<AddressesController>
         getAddressResponse?.Country.Name.Should().Be(address.Country.Name);
     }
 
+    [Fact]
+    public async Task WhenGetAddressThatDoesNotExist_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var command = new GetAddressQuery() { AddressId = Guid.Empty };
+
+        // Act 
+        var response = await HttpClient.GetAsync(ApiUrl + command.AddressId);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Be("Couldn't find address");
+    }
+
+    [Fact]
+    public async Task WhenDeleteAddressThatDoesNotExists_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var command = new DeleteAddressCommand() { AddressId = Guid.Empty };
+
+        // Act 
+        var response = await HttpClient.DeleteAsync(ApiUrl + command.AddressId);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Be("Couldn't delete address");
+    }
 
     private static Address CreateAddress()
     {

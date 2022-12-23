@@ -1,5 +1,5 @@
-﻿using FlightManagement.Domain.Entities;
-using FlightManagement.Infrastructure.Generics;
+﻿using FlightManagement.Application.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManagement.API.Controllers;
@@ -9,18 +9,22 @@ namespace FlightManagement.API.Controllers;
 [ApiVersion("1.0")]
 public class BaggagesController : ControllerBase
 {
-    private readonly IRepository<Baggage> _baggageRepository;
+    private readonly IMediator _mediator;
 
-    public BaggagesController(
-        IRepository<Baggage> baggageRepository
-    )
+    public BaggagesController(IMediator mediator)
     {
-        _baggageRepository = baggageRepository;
+        _mediator = mediator;
     }
 
     [HttpGet]
     public async Task<IActionResult> All()
     {
-        return Ok(await _baggageRepository.AllAsync());
+        var result = await _mediator.Send(new GetAllBaggagesQuery());
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok(result.Entity);
     }
 }

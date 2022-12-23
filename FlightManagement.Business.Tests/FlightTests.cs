@@ -8,7 +8,7 @@ namespace FlightManagement.Business.Tests;
 public class FlightsTest
 {
     [Fact]
-    public void When_AddPassengersToFlight_Then_ShouldReturnSuccess()
+    public void WhenAddPassengersToFlight_Then_ShouldReturnSuccess()
     {
         // Arrange
         var flight = CreateFlight();
@@ -22,7 +22,7 @@ public class FlightsTest
     }
 
     [Fact]
-    public void When_AddDuplicatedPassengersToFlight_Then_ShouldReturnFailure()
+    public void WhenAddDuplicatedPassengersToFlight_Then_ShouldReturnFailure()
     {
         // Arrange
         var flight = CreateFlight();
@@ -42,7 +42,7 @@ public class FlightsTest
     }
 
     [Fact]
-    public void When_CreateFlightWithTheDepartureDatePastTheArrivalDate_Then_ShouldReturnFailure()
+    public void WhenCreateFlightWithTheDepartureDatePastTheArrivalDate_Then_ShouldReturnFailure()
     {
         // Arrange
         var result = CreateBadFlight1();
@@ -59,7 +59,7 @@ public class FlightsTest
     }
 
     [Fact]
-    public void When_AddPassengersToFlightWithNoSeatsLeft_Then_ShouldReturnFailure()
+    public void WhenAddPassengersToFlightWithNoSeatsLeft_Then_ShouldReturnFailure()
     {
         // Arrange
         var flight = CreateBadFlight2();
@@ -77,7 +77,7 @@ public class FlightsTest
     }
 
     [Fact]
-    public void When_AddPassengersWithBaggageDimensionsAboveLimit_Then_ShouldReturnFailure()
+    public void WhenAddPassengersWithBaggageDimensionsAboveLimit_Then_ShouldReturnFailure()
     {
         // Arrange
         var flight = CreateFlight();
@@ -106,7 +106,7 @@ public class FlightsTest
     }
 
     [Fact]
-    public void When_AddPassengersWithBaggageWeightAboveMaxBaggageWeightPerPersonLimit_Then_ShouldReturnFailure()
+    public void WhenAddPassengersWithBaggageWeightAboveMaxBaggageWeightPerPersonLimit_Then_ShouldReturnFailure()
     {
         // Arrange
         var flight = CreateFlight();
@@ -135,7 +135,7 @@ public class FlightsTest
     }
 
     [Fact]
-    public void When_AddPassengersWithBaggageWeightAboveBaggageWeightLimit_Then_ShouldReturnFailure()
+    public void WhenAddPassengersWithBaggageWeightAboveBaggageWeightLimit_Then_ShouldReturnFailure()
     {
         // Arrange
         var flight = CreateFlight();

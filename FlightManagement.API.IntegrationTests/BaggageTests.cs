@@ -10,11 +10,15 @@ namespace FlightManagement.API.IntegrationTests
         private const string ApiUrl = "/api/v1/baggages/";
 
         [Fact]
-        public async Task When_GetBaggages_Then_ShouldReturnBaggages()
+        public async Task WhenGetBaggages_Then_ShouldReturnBaggages()
         {
             // Arrange
+            var baggages = CreateBaggages();
             var passenger = CreatePassengers()[0];
+            baggages.ForEach(baggage => baggage.AttachBaggageToPassenger(passenger));
             await Context.Passengers.AddAsync(passenger);
+            async void Action(Baggage baggage) => await Context.Baggages.AddAsync(baggage);
+            baggages.ForEach(Action);
             await Context.SaveChangesAsync();
 
             // Act
@@ -23,7 +27,7 @@ namespace FlightManagement.API.IntegrationTests
 
             // Assert
             responseMessage.EnsureSuccessStatusCode();
-            response!.Count.Should().Be(4);
+            response!.Count.Should().Be(2);
         }
 
         private static List<Passenger> CreatePassengers()
@@ -32,7 +36,7 @@ namespace FlightManagement.API.IntegrationTests
             var flight = CreateFlight();
 
             var passengers = persons.Select(person =>
-                Passenger.Create(person, flight, 80, CreateBaggages(), new List<Allergy>()).Entity).ToList();
+                Passenger.Create(person, flight, 80, new List<Baggage>(), new List<Allergy>()).Entity).ToList();
 
             return passengers!;
         }

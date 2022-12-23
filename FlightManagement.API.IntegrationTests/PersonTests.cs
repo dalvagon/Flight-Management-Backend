@@ -1,7 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
 using FlightManagement.API.Controllers;
-using FlightManagement.API.Dtos;
+using FlightManagement.Application.Commands;
+using FlightManagement.Application.Queries;
+using FlightManagement.Application.Responses;
 using FlightManagement.Domain.Entities;
 using FluentAssertions;
 
@@ -12,7 +14,7 @@ public class PersonTests : BaseIntegrationTests<PeopleController>
     private const string ApiUrl = "/api/v1/people/";
 
     [Fact]
-    public async Task When_CreatePerson_Then_ShouldReturnPersonAsync()
+    public async Task WhenCreatePerson_Then_ShouldReturnPersonAsync()
     {
         // Arrange
         var country = CreateCountry();
@@ -21,12 +23,13 @@ public class PersonTests : BaseIntegrationTests<PeopleController>
         await Context.Cities.AddAsync(city);
         await Context.SaveChangesAsync();
 
-        var dto = new CreatePersonDto
+        var command = new CreatePersonCommand()
         {
             Name = "John",
             Surname = "Doe",
             Gender = "Male",
-            AddressDto = new CreateAddressDto
+            DateOfBirth = new DateTime(1997, 2, 23),
+            Address = new CreateAddressCommand()
             {
                 Number = "100",
                 Street = "Oak Street",
@@ -36,7 +39,7 @@ public class PersonTests : BaseIntegrationTests<PeopleController>
         };
 
         // Act
-        var responseMessage = await HttpClient.PostAsJsonAsync(ApiUrl, dto);
+        var responseMessage = await HttpClient.PostAsJsonAsync(ApiUrl, command);
         var response = await responseMessage.Content.ReadFromJsonAsync<Person>();
 
         // Assert
@@ -47,7 +50,7 @@ public class PersonTests : BaseIntegrationTests<PeopleController>
     }
 
     [Fact]
-    public async Task When_GetPerson_Then_ShouldReturnPerson()
+    public async Task WhenGetPerson_Then_ShouldReturnPerson()
     {
         // Arrange
         var person = CreatePerson();
@@ -56,30 +59,46 @@ public class PersonTests : BaseIntegrationTests<PeopleController>
 
         // Act
         var responseMessage = await HttpClient.GetAsync(ApiUrl + $"{person.Id}");
-        var response = await responseMessage.Content.ReadFromJsonAsync<Person>();
+        var content = await responseMessage.Content.ReadFromJsonAsync<Person>();
 
         // Assert
-        person.Name.Should().Be("John");
-        person.Surname.Should().Be("Doe");
+        content!.Name.Should().Be("John");
+        content.Surname.Should().Be("Doe");
+    }
+
+    [Fact]
+    public async Task WhenGetPersonThatDoesNotExist_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var command = new GetPersonQuery() { PersonId = Guid.Empty };
+
+        // Act
+        var response = await HttpClient.GetAsync(ApiUrl + $"{command.PersonId}");
+        var content = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        content.Should().Be("Couldn't find person");
     }
 
 
     [Fact]
-    public async Task When_CreatePersonWithInvalidGender_Then_ShouldReturnBadRequest()
+    public async Task WhenCreatePersonWithInvalidGender_Then_ShouldReturnBadRequest()
     {
         // Arrange
         var country = CreateCountry();
         var city = CreateCity();
-        Context.Countries.Add(country);
-        Context.Cities.Add(city);
-        Context.SaveChanges();
+        await Context.Countries.AddAsync(country);
+        await Context.Cities.AddAsync(city);
+        await Context.SaveChangesAsync();
 
-        var dto = new CreatePersonDto
+        var command = new CreatePersonCommand()
         {
             Name = "John",
             Surname = "Doe",
             Gender = "Male",
-            AddressDto = new CreateAddressDto
+            DateOfBirth = new DateTime(1984, 2, 21),
+            Address = new CreateAddressCommand()
             {
                 Number = "100",
                 Street = "Oak Street",
@@ -87,24 +106,40 @@ public class PersonTests : BaseIntegrationTests<PeopleController>
                 CountryId = country.Id
             }
         };
-        dto.Gender = "MALE";
+        command.Gender = "MALE";
 
         // Act
-        var response = await HttpClient.PostAsJsonAsync(ApiUrl, dto);
+        var response = await HttpClient.PostAsJsonAsync(ApiUrl, command);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         response.Content.ReadAsStringAsync().Result.Should()
-            .Be($"The provided gender {dto.Gender} is not one from the values: Male, Female");
+            .Be($"The provided gender {command.Gender} is not one from the values: Male, Female");
     }
 
     [Fact]
-    public async Task When_DeletePassenger_Then_ShouldReturnSuccess()
+    public async Task WhenGetPassengers_Then_ShouldReturnPassengers()
     {
         // Arrange
         var person = CreatePerson();
-        Context.People.Add(person);
-        Context.SaveChanges();
+        await Context.AddAsync(person);
+        await Context.SaveChangesAsync();
+
+        // Act
+        var response = await HttpClient.GetAsync(ApiUrl);
+        var content = await response.Content.ReadFromJsonAsync<IReadOnlyCollection<PersonResponse>>();
+
+        // Assert
+        content.Count.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task WhenDeletePassenger_Then_ShouldReturnSuccess()
+    {
+        // Arrange
+        var person = CreatePerson();
+        await Context.People.AddAsync(person);
+        await Context.SaveChangesAsync();
 
         // Act
         var response = await HttpClient.DeleteAsync(ApiUrl + person.Id);
@@ -112,6 +147,21 @@ public class PersonTests : BaseIntegrationTests<PeopleController>
         // Assert
         response.EnsureSuccessStatusCode();
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task WhenDeletePersonThatDoesNotExists_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var command = new DeletePersonCommand() { PersonId = Guid.Empty };
+
+        // Act 
+        var response = await HttpClient.DeleteAsync(ApiUrl + command.PersonId);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Be("Couldn't delete person");
     }
 
     private static Address CreateAddress()

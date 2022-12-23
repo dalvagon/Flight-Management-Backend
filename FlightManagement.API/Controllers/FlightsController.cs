@@ -1,7 +1,6 @@
-﻿using FlightManagement.API.Dtos;
-using FlightManagement.Application.Validator;
-using FlightManagement.Domain.Entities;
-using FlightManagement.Infrastructure.Generics;
+﻿using FlightManagement.Application.Commands;
+using FlightManagement.Application.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManagement.API.Controllers;
@@ -11,70 +10,60 @@ namespace FlightManagement.API.Controllers;
 [ApiVersion("1.0")]
 public class FlightsController : ControllerBase
 {
-    private readonly IRepository<Airport> _airportRepository;
-    private readonly IRepository<Flight> _flightRepository;
+    private readonly IMediator _mediator;
 
-    public FlightsController(
-        IRepository<Flight> flightRepository,
-        IRepository<Airport> airportRepository
-    )
+    public FlightsController(IMediator mediator)
     {
-        _flightRepository = flightRepository;
-        _airportRepository = airportRepository;
+        _mediator = mediator;
     }
 
     [HttpGet("all")]
     public async Task<IActionResult> All()
     {
-        return Ok(await _flightRepository.AllAsync());
+        var result = await _mediator.Send(new GetAllFlightsQuery());
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok(result.Entity);
     }
 
     [HttpGet]
     public async Task<IActionResult> AllFromDepartureAndDestinationCities([FromQuery] string departureCity,
         [FromQuery] string destinationCity)
     {
-        return Ok(await _flightRepository.FindAsync(flight =>
-            flight.DepartureAirport.Address.City.Name == departureCity &&
-            flight.DestinationAirport.Address.City.Name == destinationCity));
-    }
-
-    [HttpGet("{flightId:guid}")]
-    public async Task<IActionResult> Get(Guid flightId)
-    {
-        return Ok(await _flightRepository.GetAsync(flightId));
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateFlightDto dto)
-    {
-        var departureAirport = await _airportRepository.GetAsync(dto.DepartureAirportId);
-        var destinationAirport = await _airportRepository.GetAsync(dto.DestinationAirportId);
-
-        var result = Flight
-            .Create(
-                dto.DepartureDate,
-                dto.ArrivalDate,
-                dto.PassengerCapacity,
-                dto.BaggageWeightCapacity,
-                dto.MaxWeightPerBaggage,
-                dto.MaxBaggageWeightPerPassenger,
-                dto.MaxBaggageWidth,
-                dto.MaxBaggageHeight,
-                dto.MaxBaggageLength,
-                departureAirport!,
-                destinationAirport!
-            );
-
+        var result = await _mediator.Send(new GetAllFlightsFromDepartureAndDestinationCitiesQuery()
+            { DepartureCity = departureCity, DestinationCity = destinationCity });
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
         }
 
-        var flight = result.Entity!;
+        return Ok(result.Entity);
+    }
 
-        await _flightRepository.AddAsync(flight);
-        _flightRepository.SaveChangesAsync();
+    [HttpGet("{flightId:guid}")]
+    public async Task<IActionResult> Get(Guid flightId)
+    {
+        var result = await _mediator.Send(new GetFlightQuery() { FlightId = flightId });
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
 
-        return Created(nameof(All), flight);
+        return Ok(result.Entity);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateFlightCommand command)
+    {
+        var result = await _mediator.Send(command);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Created(nameof(All), result.Entity);
     }
 }

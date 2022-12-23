@@ -11,12 +11,12 @@ public class Allergy
 
     public static Result<Allergy> Create(string name)
     {
-        var alelrgy = new Allergy
+        var alergy = new Allergy
         {
             Id = Guid.NewGuid(),
             Name = name
         };
 
-        return Result<Allergy>.Success(alelrgy);
+        return Result<Allergy>.Success(alergy);
     }
 }

@@ -2,12 +2,13 @@
 using FlightManagement.Application.Mappers;
 using FlightManagement.Application.Responses;
 using FlightManagement.Domain.Entities;
+using FlightManagement.Domain.Helpers;
 using FlightManagement.Infrastructure.Generics;
 using MediatR;
 
 namespace FlightManagement.Application.Handlers;
 
-public class CreateAddressCommandHandler : IRequestHandler<CreateAddressCommand, AddressResponse>
+public class CreateAddressCommandHandler : IRequestHandler<CreateAddressCommand, Result<AddressResponse>>
 {
     private readonly IRepository<Address> _addressRepository;
     private readonly IRepository<Country> _countryRepository;
@@ -21,17 +22,30 @@ public class CreateAddressCommandHandler : IRequestHandler<CreateAddressCommand,
         _cityRepository = cityRepository;
     }
 
-    public async Task<AddressResponse> Handle(CreateAddressCommand request, CancellationToken cancellationToken)
+    public async Task<Result<AddressResponse>> Handle(CreateAddressCommand request, CancellationToken cancellationToken)
     {
         var city = await _cityRepository.GetAsync(request.CityId);
         var country = await _countryRepository.GetAsync(request.CountryId);
+        if (city == null)
+        {
+            return Result<AddressResponse>.Failure("Couldn't find city");
+        }
 
-        var address = Address.Create(request.Number, request.Street, city!, country!).Entity;
-        if (address == null) throw new ApplicationException("Issue with mapper");
+        if (country == null)
+        {
+            return Result<AddressResponse>.Failure("Couldn't find country");
+        }
 
-        var newAddress = await _addressRepository.AddAsync(address);
+        var result = Address.Create(request.Number, request.Street, city, country);
+        if (result.IsFailure)
+        {
+            return Result<AddressResponse>.Failure(result.Error!);
+        }
+
+        var newAddress = await _addressRepository.AddAsync(result.Entity!);
         _addressRepository.SaveChangesAsync();
+        var address = AddressMapper.Mapper.Map<AddressResponse>(newAddress);
 
-        return AddressMapper.Mapper.Map<AddressResponse>(newAddress);
+        return Result<AddressResponse>.Success(address);
     }
 }

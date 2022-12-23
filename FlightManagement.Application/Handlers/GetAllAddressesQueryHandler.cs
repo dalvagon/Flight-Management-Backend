@@ -1,13 +1,16 @@
 ﻿using FlightManagement.Application.Mappers;
+using FlightManagement.Application.Queries;
 using FlightManagement.Application.Responses;
 using FlightManagement.Domain.Entities;
+using FlightManagement.Domain.Helpers;
 using FlightManagement.Infrastructure.Generics;
 using MediatR;
 
-namespace FlightManagement.Application.Queries
+namespace FlightManagement.Application.Handlers
 {
     public class
-        GetAllAddressesQueryHandler : IRequestHandler<GetAllAddressesQuery, IReadOnlyCollection<AddressResponse>>
+        GetAllAddressesQueryHandler : IRequestHandler<GetAllAddressesQuery,
+            Result<IReadOnlyCollection<AddressResponse>>>
     {
         private readonly IRepository<Address> _addressRepository;
 
@@ -16,13 +19,13 @@ namespace FlightManagement.Application.Queries
             _addressRepository = addressRepository;
         }
 
-        public async Task<IReadOnlyCollection<AddressResponse>> Handle(GetAllAddressesQuery request,
+        public async Task<Result<IReadOnlyCollection<AddressResponse>>> Handle(GetAllAddressesQuery request,
             CancellationToken cancellationToken)
         {
             var addresses =
                 AddressMapper.Mapper.Map<IReadOnlyCollection<AddressResponse>>(await _addressRepository.AllAsync());
 
-            return addresses;
+            return Result<IReadOnlyCollection<AddressResponse>>.Success(addresses);
         }
     }
 }

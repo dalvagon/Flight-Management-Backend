@@ -1,6 +1,5 @@
-﻿using System.Collections.Immutable;
-using FlightManagement.Domain.Entities;
-using FlightManagement.Infrastructure.Generics;
+﻿using FlightManagement.Application.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManagement.API.Controllers;
@@ -10,19 +9,22 @@ namespace FlightManagement.API.Controllers;
 [ApiVersion("1.0")]
 public class CitiesController : ControllerBase
 {
-    private readonly IRepository<City> _cityRepository;
+    private readonly IMediator _mediator;
 
-    public CitiesController(IRepository<City> cityRepository)
+    public CitiesController(IMediator mediator)
     {
-        _cityRepository = cityRepository;
+        _mediator = mediator;
     }
 
     [HttpGet]
     public async Task<IActionResult> AllFromCountry([FromQuery] string countryName)
     {
-        var cities = await _cityRepository.FindAsync(c => c.Country.Name == countryName);
-        cities = cities.OrderBy(c => c.Name).ToImmutableList();
+        var result = await _mediator.Send(new GetAllCitiesFromCountryQuery() { CountryName = countryName });
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
 
-        return Ok(cities);
+        return Ok(result.Entity);
     }
 }

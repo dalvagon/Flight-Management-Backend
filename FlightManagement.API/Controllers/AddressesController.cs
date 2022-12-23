@@ -20,31 +20,50 @@ public class AddressesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> All()
     {
-        var addresses = await _mediator.Send(new GetAllAddressesQuery());
+        var result = await _mediator.Send(new GetAllAddressesQuery());
 
-        return Ok(addresses);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok(result.Entity);
     }
 
     [HttpGet("{addressId:guid}")]
     public async Task<IActionResult> Get(Guid addressId)
     {
-        var address = await _mediator.Send(new GetAddressCommand() { AddressId = addressId });
+        var result = await _mediator.Send(new GetAddressQuery() { AddressId = addressId });
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
 
-        return Ok(address);
+        return Ok(result.Entity);
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateAsync([FromBody] CreateAddressCommand command)
     {
-        var address = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-        return Created(nameof(Get), address);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Created(nameof(Get), result.Entity);
     }
 
     [HttpDelete("{addressId:guid}")]
     public async Task<IActionResult> Delete(Guid addressId)
     {
-        await _mediator.Send(new DeleteAddressCommand() { AddressId = addressId });
+        var result = await _mediator.Send(new DeleteAddressCommand() { AddressId = addressId });
+
+        if (result.IsFailure)
+        {
+            return BadRequest("Couldn't delete address");
+        }
 
         return NoContent();
     }

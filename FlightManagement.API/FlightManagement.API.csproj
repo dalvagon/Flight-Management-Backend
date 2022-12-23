@@ -32,4 +32,8 @@
         <ProjectReference Include="..\FlightManagement.Infrastructure\FlightManagement.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Dtos\" />
+    </ItemGroup>
+
 </Project>

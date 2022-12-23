@@ -14,7 +14,7 @@ public class FlightResponse
     public double MaxBaggageWidth { get; private set; }
     public double MaxBaggageHeight { get; private set; }
     public double MaxBaggageLength { get; private set; }
-    public List<PassengerResponse> PassengersResponse { get; } = new();
+    public List<Passenger> Passengers { get; } = new();
     public Airport DepartureAirport { get; private set; }
     public Airport DestinationAirport { get; private set; }
     public List<Airport> IntermediateStops { get; } = new();

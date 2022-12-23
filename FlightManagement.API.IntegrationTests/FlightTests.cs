@@ -1,12 +1,9 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using FlightManagement.API.Controllers;
-using FlightManagement.API.Dtos;
+using FlightManagement.Application.Commands;
 using FlightManagement.Domain.Entities;
-using FlightManagement.Infrastructure.Generics;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
 
 namespace FlightManagement.API.IntegrationTests;
 
@@ -15,51 +12,7 @@ public class FlightTests : BaseIntegrationTests<FlightsController>
     private const string ApiUrl = "/api/v1/flights/";
 
     [Fact]
-    public async Task When_CreateFlight_Then_ShouldReturnFlight()
-    {
-        // Arrange
-        var airportRepositoryMock = new Mock<IRepository<Airport>>();
-        var flightRepositoryMock = new Mock<IRepository<Flight>>();
-        var airport = CreateDepartureAirport();
-        airportRepositoryMock.Setup(p => p.GetAsync(It.IsAny<Guid>()))
-            .ReturnsAsync(airport);
-        var flightsController = new FlightsController(flightRepositoryMock.Object, airportRepositoryMock.Object);
-        var flight = CreateFlight();
-        var dto = new CreateFlightDto
-        {
-            DepartureDate = flight.DepartureDate,
-            ArrivalDate = flight.ArrivalDate,
-            PassengerCapacity = flight.PassengerCapacity,
-            BaggageWeightCapacity = flight.BaggageWeightCapacity,
-            MaxWeightPerBaggage = flight.MaxWeightPerBaggage,
-            MaxBaggageWeightPerPassenger = flight.MaxBaggageWeightPerPassenger,
-            MaxBaggageWidth = flight.MaxBaggageWidth,
-            MaxBaggageHeight = flight.MaxBaggageHeight,
-            MaxBaggageLength = flight.MaxBaggageLength,
-            DepartureAirportId = flight.DepartureAirport.Id,
-            DestinationAirportId = flight.DestinationAirport.Id
-        };
-
-        // Act
-        var response = await flightsController.Create(dto) as ObjectResult;
-        var flightResponse = response!.Value as Flight;
-
-        // Assert
-        flightResponse!.DepartureDate.Should().Be(flight.DepartureDate);
-        flightResponse.ArrivalDate.Should().Be(flight.ArrivalDate);
-        flightResponse.PassengerCapacity.Should().Be(flight.PassengerCapacity);
-        flightResponse.BaggageWeightCapacity.Should().Be(flight.BaggageWeightCapacity);
-        flightResponse.MaxWeightPerBaggage.Should().Be(flight.MaxWeightPerBaggage);
-        flightResponse.MaxBaggageWeightPerPassenger.Should().Be(flightResponse.MaxBaggageWeightPerPassenger);
-        flightResponse.MaxBaggageWidth.Should().Be(flight.MaxBaggageWidth);
-        flightResponse.MaxBaggageHeight.Should().Be(flight.MaxBaggageHeight);
-        flightResponse.MaxBaggageLength.Should().Be(flight.MaxBaggageLength);
-        flightResponse.DepartureAirport.Should().Be(airport);
-        flightResponse.DestinationAirport.Should().Be(airport);
-    }
-
-    [Fact]
-    public async Task When_CreateFlightWithTheArrivalDatePastTheDepartureDate_Then_ShouldReturnBadRequestAsync()
+    public async Task WhenCreateFlightWithTheArrivalDatePastTheDepartureDate_Then_ShouldReturnBadRequestAsync()
     {
         // Arrange
         var flight = CreateFlight();
@@ -69,7 +22,7 @@ public class FlightTests : BaseIntegrationTests<FlightsController>
         await Context.Airports.AddAsync(destinationAirport);
         await Context.SaveChangesAsync();
 
-        var dto = new CreateFlightDto
+        var command = new CreateFlightCommand()
         {
             DepartureDate = flight.ArrivalDate,
             ArrivalDate = flight.DepartureDate,
@@ -85,18 +38,18 @@ public class FlightTests : BaseIntegrationTests<FlightsController>
         };
 
         // Act
-        var response = await HttpClient.PostAsJsonAsync(ApiUrl, dto);
+        var response = await HttpClient.PostAsJsonAsync(ApiUrl, command);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         response.Content.ReadAsStringAsync().Result.Should().Be(
-            $"The departure date {dto.DepartureDate} for the flight is past the arrival date {dto.ArrivalDate}");
+            $"The departure date {command.DepartureDate} for the flight is past the arrival date {command.ArrivalDate}");
     }
 
 
     [Fact]
     public async Task
-        When_CreateFlightWithTheMaxBaggageWeightPerPersonGreaterThanTheBaggageWeightCapacityDividedByThePassengerCapacity_Then_ShouldReturnBadRequestAsync()
+        WhenCreateFlightWithTheMaxBaggageWeightPerPersonGreaterThanTheBaggageWeightCapacityDividedByThePassengerCapacity_Then_ShouldReturnBadRequestAsync()
     {
         // Arrange
         var flight = CreateFlight();
@@ -106,7 +59,7 @@ public class FlightTests : BaseIntegrationTests<FlightsController>
         await Context.Airports.AddAsync(destinationAirport);
         await Context.SaveChangesAsync();
 
-        var dto = new CreateFlightDto
+        var command = new CreateFlightCommand
         {
             DepartureDate = flight.DepartureDate,
             ArrivalDate = flight.ArrivalDate,
@@ -122,7 +75,7 @@ public class FlightTests : BaseIntegrationTests<FlightsController>
         };
 
         // Act
-        var response = await HttpClient.PostAsJsonAsync(ApiUrl, dto);
+        var response = await HttpClient.PostAsJsonAsync(ApiUrl, command);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -131,14 +84,13 @@ public class FlightTests : BaseIntegrationTests<FlightsController>
     }
 
     [Fact]
-    public async Task When_GetFlight_Then_ShouldReturnFlight()
+    public async Task WhenGetFlight_Then_ShouldReturnFlight()
     {
         // Arrange
         var flight = CreateFlight();
         var passengers = CreatePassengersForFlight(flight);
-        Context.Flights.Add(flight);
-        passengers.ForEach(passenger => Context.Passengers.Add(passenger));
-        Context.SaveChanges();
+        await Context.Flights.AddAsync(passengers[0].Flight);
+        await Context.SaveChangesAsync();
 
         // Act
         var responseMessage = await HttpClient.GetAsync(ApiUrl + flight.Id);
@@ -147,7 +99,89 @@ public class FlightTests : BaseIntegrationTests<FlightsController>
         // Assert
         responseMessage.EnsureSuccessStatusCode();
         responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
-        response?.Passengers.Count.Should().Be(3);
+        response!.Passengers.Count.Should().Be(3);
+    }
+
+    [Fact]
+    public async Task WhenGetFlights_Then_ShouldReturnFlights()
+    {
+        // Arrange
+        var flight = CreateFlight();
+        var passengers = CreatePassengersForFlight(flight);
+        await Context.Flights.AddAsync(passengers[0].Flight);
+        await Context.SaveChangesAsync();
+
+        // Act
+        var responseMessage = await HttpClient.GetAsync(ApiUrl + "all");
+        var response = await responseMessage.Content.ReadFromJsonAsync<List<Flight>>();
+
+        // Assert
+        responseMessage.EnsureSuccessStatusCode();
+        responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
+        response!.Count.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task WhenGetFlightByDepartureAndDestinationCities_Then_ShouldReturnFlights()
+    {
+        // Arrange
+        var flight = CreateFlight();
+        var passengers = CreatePassengersForFlight(flight);
+        await Context.Flights.AddAsync(passengers[0].Flight);
+        await Context.SaveChangesAsync();
+
+        // Act
+        var responseMessage = await HttpClient.GetAsync(ApiUrl +
+                                                        $"?departureCity={flight.DepartureAirport.Address.City.Name}&destinationCity={flight.DestinationAirport.Address.City.Name}");
+        var response = await responseMessage.Content.ReadFromJsonAsync<List<Flight>>();
+
+        // Assert
+        responseMessage.EnsureSuccessStatusCode();
+        responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
+        response!.Count.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task WhenCreateFlight_Then_ShouldReturnFlight()
+    {
+        // Arrange
+        var flight = CreateFlight();
+        await Context.Countries.AddAsync(flight.DepartureAirport.Address.Country);
+        await Context.Cities.AddAsync(flight.DestinationAirport.Address.City);
+        await Context.Countries.AddAsync(flight.DestinationAirport.Address.Country);
+        await Context.Addresses.AddAsync(flight.DestinationAirport.Address);
+        await Context.Addresses.AddAsync(flight.DestinationAirport.Address);
+        await Context.Cities.AddAsync(flight.DepartureAirport.Address.City);
+        await Context.Airports.AddAsync(flight.DepartureAirport);
+        await Context.Airports.AddAsync(flight.DestinationAirport);
+        await Context.SaveChangesAsync();
+        var command = new CreateFlightCommand()
+        {
+            DepartureDate = flight.DepartureDate,
+            ArrivalDate = flight.ArrivalDate,
+            PassengerCapacity = flight.PassengerCapacity,
+            BaggageWeightCapacity = flight.BaggageWeightCapacity,
+            MaxWeightPerBaggage = flight.MaxWeightPerBaggage,
+            MaxBaggageWeightPerPassenger = flight.MaxBaggageWeightPerPassenger,
+            MaxBaggageHeight = flight.MaxBaggageHeight,
+            MaxBaggageLength = flight.MaxBaggageLength,
+            MaxBaggageWidth = flight.MaxBaggageWidth,
+            DestinationAirportId = flight.DestinationAirport.Id,
+            DepartureAirportId = flight.DepartureAirport.Id
+        };
+
+        // Act
+        var responseMessage = await HttpClient.PostAsJsonAsync(ApiUrl, command);
+        var response = await responseMessage.Content.ReadFromJsonAsync<Flight>();
+
+        // Assert
+        responseMessage.EnsureSuccessStatusCode();
+        responseMessage.StatusCode.Should().Be(HttpStatusCode.Created);
+        response!.Passengers.Count.Should().Be(0);
+        response.DestinationAirport.Address.Country.Name.Should().Be(flight.DestinationAirport.Address.Country.Name);
+        response.DestinationAirport.Address.City.Name.Should().Be(flight.DestinationAirport.Address.City.Name);
+        response.DepartureDate.Should().Be(flight.DepartureDate);
+        response.ArrivalDate.Should().Be(flight.ArrivalDate);
     }
 
     private static List<Passenger> CreatePassengersForFlight(Flight flight)

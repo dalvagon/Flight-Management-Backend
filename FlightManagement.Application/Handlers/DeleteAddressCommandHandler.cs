@@ -1,11 +1,12 @@
 ﻿using FlightManagement.Application.Commands;
 using FlightManagement.Domain.Entities;
+using FlightManagement.Domain.Helpers;
 using FlightManagement.Infrastructure.Generics;
 using MediatR;
 
 namespace FlightManagement.Application.Handlers
 {
-    public class DeleteAddressCommandHandler : IRequestHandler<DeleteAddressCommand>
+    public class DeleteAddressCommandHandler : IRequestHandler<DeleteAddressCommand, Result>
     {
         private readonly IRepository<Address> _addressRepository;
 
@@ -14,18 +15,18 @@ namespace FlightManagement.Application.Handlers
             _addressRepository = addressRepository;
         }
 
-        public async Task<Unit> Handle(DeleteAddressCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(DeleteAddressCommand request, CancellationToken cancellationToken)
         {
             var address = await _addressRepository.GetAsync(request.AddressId);
             if (address == null)
             {
-                throw new ApplicationException("Issue with mapper");
+                return Result.Failure("Couldn't delete address");
             }
 
             _addressRepository.Delete(address);
             _addressRepository.SaveChangesAsync();
 
-            return Unit.Value;
+            return Result.Success();
         }
     }
 }

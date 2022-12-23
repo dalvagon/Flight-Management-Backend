@@ -1,6 +1,7 @@
-﻿using FluentValidation;
+﻿using FlightManagement.Application.Commands;
+using FluentValidation;
 
-namespace FlightManagement.Application.Commands
+namespace FlightManagement.Application.Validators
 {
     public class CreateAddressCommandValidator : AbstractValidator<CreateAddressCommand>
     {
