@@ -1,24 +1,10 @@
 ﻿using FlightManagement.Domain.Entities;
 using FlightManagement.Domain.Helpers;
-using FluentAssertions;
-using Xunit;
 
 namespace FlightManagement.Business.Tests
 {
     public class AdministratorTests
     {
-        [Fact]
-        public void WhenAddPassengersToFlight_Then_ShouldReturnSuccess()
-        {
-            // Arrange
-            var result = CreateAdministrator();
-
-            // Act
-
-            // Assert
-            result.IsSuccess.Should().BeTrue();
-        }
-
         private static Result<Administrator> CreateAdministrator()
         {
             return Administrator.Create(CreateCompany(), CreatePersons()[0]);
@@ -35,8 +21,10 @@ namespace FlightManagement.Business.Tests
 
             return new List<Person>
             {
-                Person.Create("John", "Doe", new DateTime(1998, 10, 11), "Male", address).Entity!,
-                Person.Create("Emma", "Doe", new DateTime(1998, 10, 11), "Female", address).Entity!
+                Person.Create("John", "Doe", "john.doe@gmail.com", new byte[] { }, new byte[] { },
+                    new DateTime(1998, 10, 11), "Male", address).Entity!,
+                Person.Create("Emma", "Doe", "emma.doe@gmail.com", new byte[] { }, new byte[] { },
+                    new DateTime(1998, 10, 11), "Female", address).Entity!
             };
         }
 

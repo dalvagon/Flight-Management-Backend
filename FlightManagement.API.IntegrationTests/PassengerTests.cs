@@ -185,8 +185,10 @@ public class PassengerTests : BaseIntegrationTests<PassengersController>
 
         return new List<Person>
         {
-            Person.Create("John", "Doe", new DateTime(1998, 10, 11), "Male", address).Entity!,
-            Person.Create("Emma", "Doe", new DateTime(1998, 10, 11), "Female", address).Entity!
+            Person.Create("John", "Doe", "john.doe@gmail.com", new byte[] { }, new byte[] { },
+                new DateTime(1998, 10, 11), "Male", address).Entity!,
+            Person.Create("Emma", "Doe", "emma.doe@gmail.com", new byte[] { }, new byte[] { },
+                new DateTime(1998, 10, 11), "Female", address).Entity!
         };
     }
 }

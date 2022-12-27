@@ -15,7 +15,7 @@ namespace FlightManagement.Infrastructure.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.0");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.1");
 
             modelBuilder.Entity("FlightManagement.Domain.Entities.Address", b =>
                 {
@@ -23,18 +23,16 @@ namespace FlightManagement.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("CityId")
+                    b.Property<string>("CityId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("CountryId")
+                    b.Property<string>("CountryId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Number")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Street")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -52,10 +50,10 @@ namespace FlightManagement.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("CompanyId")
+                    b.Property<Guid?>("CompanyId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("PersonId")
+                    b.Property<Guid?>("PersonId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -73,14 +71,13 @@ namespace FlightManagement.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("AddressId")
+                    b.Property<Guid?>("AddressId")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid?>("FlightId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -99,7 +96,6 @@ namespace FlightManagement.Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<Guid?>("PassengerId")
@@ -124,7 +120,7 @@ namespace FlightManagement.Infrastructure.Migrations
                     b.Property<double>("Length")
                         .HasColumnType("REAL");
 
-                    b.Property<Guid>("PassengerId")
+                    b.Property<Guid?>("PassengerId")
                         .HasColumnType("TEXT");
 
                     b.Property<double>("Weight")
@@ -142,15 +138,14 @@ namespace FlightManagement.Infrastructure.Migrations
 
             modelBuilder.Entity("FlightManagement.Domain.Entities.City", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("CountryId")
+                    b.Property<string>("CountryId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -170,7 +165,6 @@ namespace FlightManagement.Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -180,16 +174,14 @@ namespace FlightManagement.Infrastructure.Migrations
 
             modelBuilder.Entity("FlightManagement.Domain.Entities.Country", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Code")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -209,13 +201,13 @@ namespace FlightManagement.Infrastructure.Migrations
                     b.Property<double>("BaggageWeightCapacity")
                         .HasColumnType("REAL");
 
-                    b.Property<Guid>("DepartureAirportId")
+                    b.Property<Guid?>("DepartureAirportId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DepartureDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("DestinationAirportId")
+                    b.Property<Guid?>("DestinationAirportId")
                         .HasColumnType("TEXT");
 
                     b.Property<double>("MaxBaggageHeight")
@@ -251,10 +243,10 @@ namespace FlightManagement.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("FlightId")
+                    b.Property<Guid?>("FlightId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("PersonId")
+                    b.Property<Guid?>("PersonId")
                         .HasColumnType("TEXT");
 
                     b.Property<double>("Weight")
@@ -275,21 +267,31 @@ namespace FlightManagement.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("AddressId")
+                    b.Property<Guid?>("AddressId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Gender")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
-                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("PasswordHash")
+                        .HasColumnType("BLOB");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .HasColumnType("BLOB");
+
+                    b.Property<string>("Role")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Surname")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -303,15 +305,11 @@ namespace FlightManagement.Infrastructure.Migrations
                 {
                     b.HasOne("FlightManagement.Domain.Entities.City", "City")
                         .WithMany()
-                        .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CityId");
 
                     b.HasOne("FlightManagement.Domain.Entities.Country", "Country")
                         .WithMany()
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CountryId");
 
                     b.Navigation("City");
 
@@ -322,15 +320,11 @@ namespace FlightManagement.Infrastructure.Migrations
                 {
                     b.HasOne("FlightManagement.Domain.Entities.Company", "Company")
                         .WithMany("Administrators")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CompanyId");
 
                     b.HasOne("FlightManagement.Domain.Entities.Person", "Person")
                         .WithMany()
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PersonId");
 
                     b.Navigation("Company");
 
@@ -341,9 +335,7 @@ namespace FlightManagement.Infrastructure.Migrations
                 {
                     b.HasOne("FlightManagement.Domain.Entities.Address", "Address")
                         .WithMany()
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AddressId");
 
                     b.HasOne("FlightManagement.Domain.Entities.Flight", null)
                         .WithMany("IntermediateStops")
@@ -363,9 +355,7 @@ namespace FlightManagement.Infrastructure.Migrations
                 {
                     b.HasOne("FlightManagement.Domain.Entities.Passenger", "Passenger")
                         .WithMany("Baggages")
-                        .HasForeignKey("PassengerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PassengerId");
 
                     b.Navigation("Passenger");
                 });
@@ -374,9 +364,7 @@ namespace FlightManagement.Infrastructure.Migrations
                 {
                     b.HasOne("FlightManagement.Domain.Entities.Country", "Country")
                         .WithMany()
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CountryId");
 
                     b.Navigation("Country");
                 });
@@ -385,15 +373,11 @@ namespace FlightManagement.Infrastructure.Migrations
                 {
                     b.HasOne("FlightManagement.Domain.Entities.Airport", "DepartureAirport")
                         .WithMany()
-                        .HasForeignKey("DepartureAirportId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DepartureAirportId");
 
                     b.HasOne("FlightManagement.Domain.Entities.Airport", "DestinationAirport")
                         .WithMany()
-                        .HasForeignKey("DestinationAirportId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DestinationAirportId");
 
                     b.Navigation("DepartureAirport");
 
@@ -404,15 +388,11 @@ namespace FlightManagement.Infrastructure.Migrations
                 {
                     b.HasOne("FlightManagement.Domain.Entities.Flight", "Flight")
                         .WithMany("Passengers")
-                        .HasForeignKey("FlightId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FlightId");
 
                     b.HasOne("FlightManagement.Domain.Entities.Person", "Person")
                         .WithMany()
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PersonId");
 
                     b.Navigation("Flight");
 
@@ -423,9 +403,7 @@ namespace FlightManagement.Infrastructure.Migrations
                 {
                     b.HasOne("FlightManagement.Domain.Entities.Address", "Address")
                         .WithMany()
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AddressId");
 
                     b.Navigation("Address");
                 });

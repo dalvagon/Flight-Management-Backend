@@ -1,6 +1,7 @@
 ﻿using FlightManagement.Application.Commands;
 using FlightManagement.Application.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManagement.API.Controllers;
@@ -18,6 +19,7 @@ public class FlightsController : ControllerBase
     }
 
     [HttpGet("all")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> All()
     {
         var result = await _mediator.Send(new GetAllFlightsQuery());
@@ -30,6 +32,7 @@ public class FlightsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin,User")]
     public async Task<IActionResult> AllFromDepartureAndDestinationCities([FromQuery] string departureCity,
         [FromQuery] string destinationCity)
     {
@@ -44,6 +47,7 @@ public class FlightsController : ControllerBase
     }
 
     [HttpGet("{flightId:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Get(Guid flightId)
     {
         var result = await _mediator.Send(new GetFlightQuery() { FlightId = flightId });
@@ -56,6 +60,7 @@ public class FlightsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] CreateFlightCommand command)
     {
         var result = await _mediator.Send(command);

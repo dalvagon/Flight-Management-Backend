@@ -1,4 +1,5 @@
-﻿using FlightManagement.Application.Commands;
+﻿using System.Security.Cryptography;
+using FlightManagement.Application.Commands;
 using FlightManagement.Application.Mappers;
 using FlightManagement.Application.Responses;
 using FlightManagement.Domain.Entities;
@@ -25,6 +26,13 @@ namespace FlightManagement.Application.Handlers
         public async Task<Result<PersonResponse>> Handle(CreatePersonCommand request,
             CancellationToken cancellationToken)
         {
+            var persons = await _personRepository.FindAsync(p => p.Email == request.Email);
+            var verifyPerson = persons.FirstOrDefault();
+            if (verifyPerson != null)
+            {
+                return Result<PersonResponse>.Failure("Person with this email already exists");
+            }
+
             var city = await _cityRepository.GetAsync(request.Address.CityId);
             var country = await _countryRepository.GetAsync(request.Address.CountryId);
             if (city == null)
@@ -43,7 +51,10 @@ namespace FlightManagement.Application.Handlers
                 return Result<PersonResponse>.Failure(addressResult.Error!);
             }
 
-            var personResponse = Person.Create(request.Name, request.Surname, request.DateOfBirth, request.Gender,
+            CreatePasswordHash(request.Password, out var passwordHash, out var passwordSalt);
+
+            var personResponse = Person.Create(request.Name, request.Surname, request.Email, passwordHash, passwordSalt,
+                request.DateOfBirth, request.Gender,
                 addressResult.Entity!);
             if (personResponse.IsFailure)
             {
@@ -56,6 +67,13 @@ namespace FlightManagement.Application.Handlers
             var person = PersonMapper.Mapper.Map<PersonResponse>(newPerson);
 
             return Result<PersonResponse>.Success(person);
+        }
+
+        private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using var hmac = new HMACSHA512();
+            passwordSalt = hmac.Key;
+            passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
         }
     }
 }

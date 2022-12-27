@@ -1,6 +1,7 @@
 ﻿using FlightManagement.Application.Commands;
 using FlightManagement.Application.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManagement.API.Controllers;
@@ -8,6 +9,7 @@ namespace FlightManagement.API.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
 [ApiVersion("1.0")]
+[Authorize(Roles = "Admin")]
 public class AirportsController : ControllerBase
 {
     private readonly IMediator _mediator;

@@ -15,6 +15,8 @@ public class FlightRepository : Repository<Flight>
         return Context.Flights.Include(f => f.Passengers).ThenInclude(p => p.Person)
             .Include(f => f.Passengers).ThenInclude(p => p.Baggages)
             .Include(f => f.DepartureAirport).ThenInclude(a => a.Address).ThenInclude(a => a.City)
+	    .Include(f => f.DepartureAirport).ThenInclude(a => a.Address).ThenInclude(a => a.Country)
+	    .Include(f => f.DestinationAirport).ThenInclude(a => a.Address).ThenInclude(a => a.City)
             .Include(f => f.DestinationAirport).ThenInclude(a => a.Address).ThenInclude(a => a.Country)
             .Include(f => f.IntermediateStops).ThenInclude(a => a.Address)
             .FirstOrDefaultAsync(f => f.Id == id);
@@ -25,6 +27,8 @@ public class FlightRepository : Repository<Flight>
         return await Context.Flights.Include(f => f.Passengers).ThenInclude(p => p.Person)
             .Include(f => f.Passengers).ThenInclude(p => p.Baggages)
             .Include(f => f.DepartureAirport).ThenInclude(a => a.Address).ThenInclude(a => a.City)
+	    .Include(f => f.DepartureAirport).ThenInclude(a => a.Address).ThenInclude(a => a.Country)
+	    .Include(f => f.DestinationAirport).ThenInclude(a => a.Address).ThenInclude(a => a.City)
             .Include(f => f.DestinationAirport).ThenInclude(a => a.Address).ThenInclude(a => a.Country)
             .Include(f => f.IntermediateStops).ThenInclude(a => a.Address)
             .Where(predicate).ToListAsync();
@@ -35,6 +39,8 @@ public class FlightRepository : Repository<Flight>
         return await Context.Flights.Include(f => f.Passengers).ThenInclude(p => p.Person)
             .Include(f => f.Passengers).ThenInclude(p => p.Baggages)
             .Include(f => f.DepartureAirport).ThenInclude(a => a.Address).ThenInclude(a => a.City)
+	    .Include(f => f.DepartureAirport).ThenInclude(a => a.Address).ThenInclude(a => a.Country)
+	    .Include(f => f.DestinationAirport).ThenInclude(a => a.Address).ThenInclude(a => a.City)
             .Include(f => f.DestinationAirport).ThenInclude(a => a.Address).ThenInclude(a => a.Country)
             .Include(f => f.IntermediateStops).ThenInclude(a => a.Address)
             .ToListAsync();

@@ -7,6 +7,7 @@ public class PersonResponse
     public Guid Id { get; private set; }
     public string Name { get; private set; }
     public string Surname { get; private set; }
+    public string Email { get; private set; }
     public DateTime DateOfBirth { get; private set; }
     public Gender Gender { get; private set; }
     public Address Address { get; private set; }

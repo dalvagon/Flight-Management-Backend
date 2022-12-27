@@ -1,6 +1,4 @@
-﻿using FlightManagement.Domain.Entities;
-
-namespace FlightManagement.Application.Commands
+﻿namespace FlightManagement.Application.Commands
 {
     public class CreateBaggageCommand
     {

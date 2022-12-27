@@ -277,9 +277,12 @@ public class FlightsTest
 
         return new List<Person>
         {
-            Person.Create("John", "Doe", new DateTime(1998, 10, 11), "Male", address).Entity!,
-            Person.Create("Al", "Pacino", new DateTime(2000, 1, 24), "Male", address).Entity!,
-            Person.Create("Ina", "Jackson", new DateTime(1979, 5, 1), "Female", address).Entity!
+            Person.Create("John", "Doe", "john.doe@gmail.com", new byte[] { }, new byte[] { },
+                new DateTime(1998, 10, 11), "Male", address).Entity!,
+            Person.Create("Al", "Pacino", "all.pacino@gmail.com", new byte[] { }, new byte[] { },
+                new DateTime(2000, 1, 24), "Male", address).Entity!,
+            Person.Create("Ina", "Jackson", "ina.jackson@gmail.com", new byte[] { }, new byte[] { },
+                new DateTime(1979, 5, 1), "Female", address).Entity!
         };
     }
 }

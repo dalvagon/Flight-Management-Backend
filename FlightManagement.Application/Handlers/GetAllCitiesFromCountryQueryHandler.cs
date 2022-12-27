@@ -1,4 +1,5 @@
-﻿using FlightManagement.Application.Mappers;
+﻿using System.Collections.Immutable;
+using FlightManagement.Application.Mappers;
 using FlightManagement.Application.Queries;
 using FlightManagement.Application.Responses;
 using FlightManagement.Domain.Entities;
@@ -28,6 +29,7 @@ namespace FlightManagement.Application.Handlers
             }
 
             var cities = CityMapper.Mapper.Map<IReadOnlyCollection<CityResponse>>(result);
+            cities = cities!.OrderBy(c => c.Name).ToImmutableList();
 
             return Result<IReadOnlyCollection<CityResponse>>.Success(cities);
         }

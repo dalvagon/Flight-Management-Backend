@@ -28,6 +28,8 @@ public class PersonTests : BaseIntegrationTests<PeopleController>
             Name = "John",
             Surname = "Doe",
             Gender = "Male",
+            Password = "john1234",
+            Email = "john.doe@gmail.com",
             DateOfBirth = new DateTime(1997, 2, 23),
             Address = new CreateAddressCommand()
             {
@@ -97,6 +99,8 @@ public class PersonTests : BaseIntegrationTests<PeopleController>
             Name = "John",
             Surname = "Doe",
             Gender = "Male",
+            Password = "john1234",
+            Email = "john.doe@gmail.com",
             DateOfBirth = new DateTime(1984, 2, 21),
             Address = new CreateAddressCommand()
             {
@@ -185,6 +189,7 @@ public class PersonTests : BaseIntegrationTests<PeopleController>
 
     private static Person CreatePerson()
     {
-        return Person.Create("John", "Doe", new DateTime(1985, 11, 9), "Male", CreateAddress()).Entity!;
+        return Person.Create("John", "Doe", "john.doe@gmail.com", new byte[] { }, new byte[] { },
+            new DateTime(1985, 11, 9), "Male", CreateAddress()).Entity!;
     }
 }

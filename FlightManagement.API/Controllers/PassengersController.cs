@@ -1,7 +1,9 @@
 ﻿using FlightManagement.Application.Commands;
 using FlightManagement.Application.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace FlightManagement.API.Controllers;
 
@@ -18,6 +20,7 @@ public class PassengersController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> AllForFlight([FromQuery] Guid flightId)
     {
         var result = await _mediator.Send(new GetAllPassengersForFlightQuery() { FlightId = flightId });
@@ -30,6 +33,7 @@ public class PassengersController : ControllerBase
     }
 
     [HttpGet("{passengerId:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Get(Guid passengerId)
     {
         var result = await _mediator.Send(new GetPassengerQuery() { PassengerId = passengerId });
@@ -42,6 +46,7 @@ public class PassengersController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "User")]
     public async Task<IActionResult> Create([FromBody] CreatePassengerCommand command)
     {
         var result = await _mediator.Send(command);
@@ -54,6 +59,7 @@ public class PassengersController : ControllerBase
     }
 
     [HttpDelete("{passengerId:guid}")]
+    [Authorize(Roles = "Admin,User")]
     public async Task<IActionResult> Delete(Guid passengerId)
     {
         var result = await _mediator.Send(new DeletePassengerCommand() { PassengerId = passengerId });

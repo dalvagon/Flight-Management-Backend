@@ -9,6 +9,8 @@ namespace FlightManagement.Application.Validators
         {
             RuleFor(person => person.Name).NotNull();
             RuleFor(person => person.Surname).NotNull();
+            RuleFor(person => person.Email).NotNull();
+            RuleFor(person => person.Password).NotNull();
             RuleFor(person => person.DateOfBirth).NotNull();
             RuleFor(person => person.Gender).NotNull();
             RuleFor(person => person.Address).NotNull();

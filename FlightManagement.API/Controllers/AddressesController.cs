@@ -1,6 +1,7 @@
 ﻿using FlightManagement.Application.Commands;
 using FlightManagement.Application.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManagement.API.Controllers;
@@ -18,6 +19,7 @@ public class AddressesController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> All()
     {
         var result = await _mediator.Send(new GetAllAddressesQuery());
@@ -31,6 +33,7 @@ public class AddressesController : ControllerBase
     }
 
     [HttpGet("{addressId:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Get(Guid addressId)
     {
         var result = await _mediator.Send(new GetAddressQuery() { AddressId = addressId });
@@ -43,6 +46,7 @@ public class AddressesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,User")]
     public async Task<IActionResult> CreateAsync([FromBody] CreateAddressCommand command)
     {
         var result = await _mediator.Send(command);
@@ -56,6 +60,7 @@ public class AddressesController : ControllerBase
     }
 
     [HttpDelete("{addressId:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(Guid addressId)
     {
         var result = await _mediator.Send(new DeleteAddressCommand() { AddressId = addressId });

@@ -1,7 +1,9 @@
 ﻿using FlightManagement.Application.Commands;
 using FlightManagement.Application.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace FlightManagement.API.Controllers;
 
@@ -18,6 +20,7 @@ public class PeopleController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> All()
     {
         var result = await _mediator.Send(new GetAllPeopleQuery());
@@ -30,6 +33,7 @@ public class PeopleController : ControllerBase
     }
 
     [HttpGet("{personId:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Get(Guid personId)
     {
         var result = await _mediator.Send(new GetPersonQuery() { PersonId = personId });
@@ -41,7 +45,9 @@ public class PeopleController : ControllerBase
         return Ok(result.Entity);
     }
 
+
     [HttpPost]
+    [Authorize(Roles = "User")]
     public async Task<IActionResult> Create([FromBody] CreatePersonCommand command)
     {
         var result = await _mediator.Send(command);
@@ -53,7 +59,9 @@ public class PeopleController : ControllerBase
         return Created(nameof(Get), result.Entity);
     }
 
+
     [HttpDelete("{personId:guid}")]
+    [Authorize(Roles = "Admin,User")]
     public async Task<IActionResult> Delete(Guid personId)
     {
         var result = await _mediator.Send(new DeletePersonCommand() { PersonId = personId });

@@ -24,7 +24,6 @@ namespace FlightManagement.Application.Handlers
             CancellationToken cancellationToken)
         {
             var result = await _countryRepository.AllAsync();
-
             if (!result.Any())
             {
                 return Result<IReadOnlyCollection<CountryResponse>>.Failure("Couldn't get countries");

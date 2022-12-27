@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using FlightManagement.Domain.Entities;
+﻿using FlightManagement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlightManagement.Infrastructure.Generics.GenericRepositories;
