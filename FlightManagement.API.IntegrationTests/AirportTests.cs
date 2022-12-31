@@ -41,6 +41,93 @@ public class AirportTests : BaseIntegrationTests<AirportsController>
     }
 
     [Fact]
+    public async Task WhenCreateAirportWithCityThatDoesNotExist_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var address = CreateAddress();
+        await Context.Addresses.AddAsync(address);
+        await Context.SaveChangesAsync();
+
+        var dto = new CreateAirportCommand()
+        {
+            Name = "New York Airport",
+            Address = new CreateAddressCommand()
+            {
+                CityId = Guid.Empty,
+                CountryId = address.Country.Id,
+                Number = address.Number,
+                Street = address.Street
+            }
+        };
+
+        // Act
+        var response = await HttpClient.PostAsJsonAsync(ApiUrl, dto);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Contain("'Address City Id' must not be empty.");
+    }
+
+    [Fact]
+    public async Task WhenCreateAirportWithCountryThatDoesNotExist_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var address = CreateAddress();
+        await Context.Addresses.AddAsync(address);
+        await Context.SaveChangesAsync();
+
+        var dto = new CreateAirportCommand()
+        {
+            Name = "New York Airport",
+            Address = new CreateAddressCommand()
+            {
+                CityId = address.City.Id,
+                CountryId = Guid.Empty,
+                Number = address.Number,
+                Street = address.Street
+            }
+        };
+
+        // Act
+        var response = await HttpClient.PostAsJsonAsync(ApiUrl, dto);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Contain("'Address Country Id' must not be empty.");
+    }
+
+    [Fact]
+    public async Task WhenCreateAirportWithBadAddress_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var address = CreateAddress();
+        await Context.Addresses.AddAsync(address);
+        await Context.SaveChangesAsync();
+
+        var dto = new CreateAirportCommand()
+        {
+            Name = "New York Airport",
+            Address = new CreateAddressCommand()
+            {
+                CityId = address.City.Id,
+                CountryId = address.Country.Id,
+                Number = "",
+                Street = address.Street
+            }
+        };
+
+        // Act
+        var response = await HttpClient.PostAsJsonAsync(ApiUrl, dto);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Contain("'Address Number' must not be empty.");
+    }
+
+    [Fact]
     public async Task WhenDeleteAirport_Then_ShouldReturnSuccess()
     {
         // Arrange

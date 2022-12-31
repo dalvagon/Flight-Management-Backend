@@ -9,6 +9,10 @@ namespace FlightManagement.Application.Validators
         {
             RuleFor(airport => airport.Name).NotEmpty().NotNull();
             RuleFor(airport => airport.Address).NotEmpty().NotNull();
+            RuleFor(airport => airport.Address.CityId).NotEmpty().NotNull();
+            RuleFor(airport => airport.Address.CountryId).NotEmpty().NotNull();
+            RuleFor(airport => airport.Address.Number).NotEmpty().NotNull();
+            RuleFor(airport => airport.Address.Street).NotEmpty().NotNull();
         }
     }
 }

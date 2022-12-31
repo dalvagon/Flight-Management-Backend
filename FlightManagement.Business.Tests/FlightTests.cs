@@ -277,11 +277,11 @@ public class FlightsTest
 
         return new List<Person>
         {
-            Person.Create("John", "Doe", "john.doe@gmail.com", new byte[] { }, new byte[] { },
+            Person.Create("John", "Doe", "john.doe@gmail.com", Array.Empty<byte>(), Array.Empty<byte>(),
                 new DateTime(1998, 10, 11), "Male", address).Entity!,
-            Person.Create("Al", "Pacino", "all.pacino@gmail.com", new byte[] { }, new byte[] { },
+            Person.Create("Al", "Pacino", "all.pacino@gmail.com", Array.Empty<byte>(), Array.Empty<byte>(),
                 new DateTime(2000, 1, 24), "Male", address).Entity!,
-            Person.Create("Ina", "Jackson", "ina.jackson@gmail.com", new byte[] { }, new byte[] { },
+            Person.Create("Ina", "Jackson", "ina.jackson@gmail.com", Array.Empty<byte>(), Array.Empty<byte>(),
                 new DateTime(1979, 5, 1), "Female", address).Entity!
         };
     }

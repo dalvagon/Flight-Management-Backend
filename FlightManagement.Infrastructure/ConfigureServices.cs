@@ -13,12 +13,10 @@ namespace FlightManagement.Infrastructure
             IConfiguration configuration)
         {
             services.AddScoped<IRepository<Address>, AddressRepository>();
-            services.AddScoped<IRepository<Administrator>, AdministratorRepository>();
             services.AddScoped<IRepository<Airport>, AirportRepository>();
             services.AddScoped<IRepository<Allergy>, AllergyRepository>();
             services.AddScoped<IRepository<Baggage>, BaggageRepository>();
             services.AddScoped<IRepository<City>, CityRepository>();
-            services.AddScoped<IRepository<Company>, CompanyRepository>();
             services.AddScoped<IRepository<Country>, CountryRepository>();
             services.AddScoped<IRepository<Flight>, FlightRepository>();
             services.AddScoped<IRepository<Passenger>, PassengerRepository>();

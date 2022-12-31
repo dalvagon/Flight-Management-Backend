@@ -35,21 +35,8 @@ namespace FlightManagement.Application.Handlers
 
             var city = await _cityRepository.GetAsync(request.Address.CityId);
             var country = await _countryRepository.GetAsync(request.Address.CountryId);
-            if (city == null)
-            {
-                return Result<PersonResponse>.Failure("Couldn't find city");
-            }
-
-            if (country == null)
-            {
-                return Result<PersonResponse>.Failure("Couldn't find country");
-            }
 
             var addressResult = Address.Create(request.Address.Number, request.Address.Street, city, country);
-            if (addressResult.IsFailure)
-            {
-                return Result<PersonResponse>.Failure(addressResult.Error!);
-            }
 
             CreatePasswordHash(request.Password, out var passwordHash, out var passwordSalt);
 

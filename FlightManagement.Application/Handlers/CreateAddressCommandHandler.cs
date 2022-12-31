@@ -26,21 +26,8 @@ public class CreateAddressCommandHandler : IRequestHandler<CreateAddressCommand,
     {
         var city = await _cityRepository.GetAsync(request.CityId);
         var country = await _countryRepository.GetAsync(request.CountryId);
-        if (city == null)
-        {
-            return Result<AddressResponse>.Failure("Couldn't find city");
-        }
-
-        if (country == null)
-        {
-            return Result<AddressResponse>.Failure("Couldn't find country");
-        }
 
         var result = Address.Create(request.Number, request.Street, city, country);
-        if (result.IsFailure)
-        {
-            return Result<AddressResponse>.Failure(result.Error!);
-        }
 
         var newAddress = await _addressRepository.AddAsync(result.Entity!);
         _addressRepository.SaveChangesAsync();

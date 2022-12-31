@@ -2,7 +2,7 @@
 
 namespace FlightManagement.Application.Mappers
 {
-    public class PersonMapper
+    public static class PersonMapper
     {
         private static readonly Lazy<IMapper> Lazy = new(() =>
         {

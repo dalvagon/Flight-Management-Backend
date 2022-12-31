@@ -3,7 +3,6 @@ using FlightManagement.Application.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 
 namespace FlightManagement.API.Controllers;
 

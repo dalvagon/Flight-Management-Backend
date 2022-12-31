@@ -1,21 +1,33 @@
 ﻿using System.Data.Common;
 using FlightManagement.Application;
-using FlightManagement.Domain.Entities;
 using FlightManagement.Infrastructure;
-using FlightManagement.Infrastructure.Generics;
-using FlightManagement.Infrastructure.Generics.GenericRepositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
 namespace FlightManagement.API.IntegrationTests;
 
 public class Startup<T> : WebApplicationFactory<T> where T : class
 {
+    private readonly IConfiguration _configuration;
+
+    public Startup()
+    {
+        _configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile(@"appsettings.json", false, false)
+            .AddEnvironmentVariables()
+            .Build();
+    }
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
@@ -26,7 +38,6 @@ public class Startup<T> : WebApplicationFactory<T> where T : class
         services.AddControllers().AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         );
-
 
         services.AddApiVersioning(o =>
         {
@@ -48,6 +59,8 @@ public class Startup<T> : WebApplicationFactory<T> where T : class
                 options.SubstituteApiVersionInUrl = true;
             });
 
+        services.AddSwaggerGen();
+
         services.AddSingleton<DbConnection>(container =>
         {
             var connection = new SqliteConnection("DataSource=:memory:");
@@ -55,25 +68,32 @@ public class Startup<T> : WebApplicationFactory<T> where T : class
 
             return connection;
         });
+
         services.AddDbContext<DatabaseContext>((container, options) =>
         {
             var connection = container.GetRequiredService<DbConnection>();
             options.UseSqlite(connection);
         });
 
-        services.AddScoped<IRepository<Address>, AddressRepository>();
-        services.AddScoped<IRepository<Administrator>, AdministratorRepository>();
-        services.AddScoped<IRepository<Airport>, AirportRepository>();
-        services.AddScoped<IRepository<Allergy>, AllergyRepository>();
-        services.AddScoped<IRepository<Baggage>, BaggageRepository>();
-        services.AddScoped<IRepository<City>, CityRepository>();
-        services.AddScoped<IRepository<Company>, CompanyRepository>();
-        services.AddScoped<IRepository<Country>, CountryRepository>();
-        services.AddScoped<IRepository<Flight>, FlightRepository>();
-        services.AddScoped<IRepository<Passenger>, PassengerRepository>();
-        services.AddScoped<IRepository<Person>, PersonRepository>();
-
         services.AddAppServices();
+        services.AddInfrastructureServices(_configuration);
+
+        services.AddAuthentication(opt =>
+        {
+            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = _configuration.GetSection("Jwt:Issuer").Value!,
+            ValidAudience = _configuration.GetSection("Jwt:Audience").Value!,
+            IssuerSigningKey =
+                new SymmetricSecurityKey(
+                    System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("Jwt:Key").Value!))
+        });
     }
 
     public void Configure(IApplicationBuilder app)
@@ -82,7 +102,9 @@ public class Startup<T> : WebApplicationFactory<T> where T : class
         app.UseSwaggerUI();
         app.UseHttpsRedirection();
         app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
         app.UseEndpoints(endpoints =>
-            endpoints.MapControllers());
+            endpoints.MapControllers().WithMetadata(new AllowAnonymousAttribute()));
     }
 }

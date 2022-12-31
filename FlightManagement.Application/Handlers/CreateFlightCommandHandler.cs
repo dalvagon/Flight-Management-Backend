@@ -24,10 +24,6 @@ namespace FlightManagement.Application.Handlers
         {
             var departureAirport = await _airportRepository.GetAsync(request.DepartureAirportId);
             var destinationAirport = await _airportRepository.GetAsync(request.DestinationAirportId);
-            if (destinationAirport == null || departureAirport == null)
-            {
-                return Result<FlightResponse>.Failure("Couldn't find airports");
-            }
 
             var result = Flight
                 .Create(

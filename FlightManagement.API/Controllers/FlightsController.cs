@@ -33,11 +33,13 @@ public class FlightsController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Admin,User")]
-    public async Task<IActionResult> AllFromDepartureAndDestinationCities([FromQuery] string departureCity,
-        [FromQuery] string destinationCity)
+    public async Task<IActionResult> AllFromDepartureAndDestinationCitiesAndDepartureDate(
+        [FromQuery] string departureCity,
+        [FromQuery] string destinationCity,
+        [FromQuery] DateTime departureDate)
     {
-        var result = await _mediator.Send(new GetAllFlightsFromDepartureAndDestinationCitiesQuery()
-            { DepartureCity = departureCity, DestinationCity = destinationCity });
+        var result = await _mediator.Send(new GetAllFlightsByDepartureAndDestinationCitiesAndDepartureDateQuery()
+            { DepartureCity = departureCity, DestinationCity = destinationCity, DepartureDate = departureDate });
         if (result.IsFailure)
         {
             return BadRequest(result.Error);

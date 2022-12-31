@@ -23,4 +23,8 @@
         <ProjectReference Include="..\FlightManagement.Business\FlightManagement.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+
 </Project>

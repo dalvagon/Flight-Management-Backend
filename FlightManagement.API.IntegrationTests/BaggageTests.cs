@@ -106,9 +106,9 @@ namespace FlightManagement.API.IntegrationTests
 
             return new List<Person>
             {
-                Person.Create("John", "Doe", "john.doe@gmail.com", new byte[] { }, new byte[] { },
+                Person.Create("John", "Doe", "john.doe@gmail.com", Array.Empty<byte>(), Array.Empty<byte>(),
                     new DateTime(1998, 10, 11), "Male", address).Entity!,
-                Person.Create("Emma", "Doe", "emma.doe@gmail.com", new byte[] { }, new byte[] { },
+                Person.Create("Emma", "Doe", "emma.doe@gmail.com", Array.Empty<byte>(), Array.Empty<byte>(),
                     new DateTime(1998, 10, 11), "Female", address).Entity!
             };
         }

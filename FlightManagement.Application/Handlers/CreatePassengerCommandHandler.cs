@@ -28,12 +28,12 @@ namespace FlightManagement.Application.Handlers
             CancellationToken cancellationToken)
         {
             var flight = await _flightRepository.GetAsync(request.FlightId);
+            var person = await _personRepository.GetAsync(request.PersonId);
             if (flight == null)
             {
                 return Result<PassengerResponse>.Failure("Couldn't find flight");
             }
 
-            var person = await _personRepository.GetAsync(request.PersonId);
             if (person == null)
             {
                 return Result<PassengerResponse>.Failure("Couldn't find person");
@@ -56,10 +56,6 @@ namespace FlightManagement.Application.Handlers
             request.AllergyIds.ForEach(Action);
 
             var result = Passenger.Create(person, flight, request.Weight, baggages, allergies);
-            if (result.IsFailure)
-            {
-                return Result<PassengerResponse>.Failure(result.Error!);
-            }
 
             var newPassenger = await _passengerRepository.AddAsync(result.Entity!);
             _passengerRepository.SaveChangesAsync();

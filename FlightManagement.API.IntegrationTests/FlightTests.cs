@@ -102,6 +102,25 @@ public class FlightTests : BaseIntegrationTests<FlightsController>
         response!.Passengers.Count.Should().Be(3);
     }
 
+
+    [Fact]
+    public async Task WhenGetFlightThatDoesNotExist_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var flight = CreateFlight();
+        var passengers = CreatePassengersForFlight(flight);
+        await Context.Flights.AddAsync(passengers[0].Flight);
+        await Context.SaveChangesAsync();
+
+        // Act
+        var response = await HttpClient.GetAsync(ApiUrl + Guid.Empty);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Be("Couldn't find flight");
+    }
+
     [Fact]
     public async Task WhenGetFlights_Then_ShouldReturnFlights()
     {
@@ -122,7 +141,7 @@ public class FlightTests : BaseIntegrationTests<FlightsController>
     }
 
     [Fact]
-    public async Task WhenGetFlightByDepartureAndDestinationCities_Then_ShouldReturnFlights()
+    public async Task WhenGetFlightByDepartureAndDestinationCitiesAndDepartureDate_Then_ShouldReturnFlights()
     {
         // Arrange
         var flight = CreateFlight();
@@ -132,7 +151,7 @@ public class FlightTests : BaseIntegrationTests<FlightsController>
 
         // Act
         var responseMessage = await HttpClient.GetAsync(ApiUrl +
-                                                        $"?departureCity={flight.DepartureAirport.Address.City.Name}&destinationCity={flight.DestinationAirport.Address.City.Name}");
+                                                        $"?departureCity={flight.DepartureAirport.Address.City.Name}&destinationCity={flight.DestinationAirport.Address.City.Name}&departureDate={flight.DepartureDate}");
         var response = await responseMessage.Content.ReadFromJsonAsync<List<Flight>>();
 
         // Assert
@@ -260,11 +279,11 @@ public class FlightTests : BaseIntegrationTests<FlightsController>
 
         return new List<Person>
         {
-            Person.Create("John", "Doe", "john.doe@gmail.com", new byte[] { }, new byte[] { },
+            Person.Create("John", "Doe", "john.doe@gmail.com", Array.Empty<byte>(), Array.Empty<byte>(),
                 new DateTime(1998, 10, 11), "Male", address).Entity!,
-            Person.Create("Al", "Pacino", "all.pacino@gmail.com", new byte[] { }, new byte[] { },
+            Person.Create("Al", "Pacino", "all.pacino@gmail.com", Array.Empty<byte>(), Array.Empty<byte>(),
                 new DateTime(2000, 1, 24), "Male", address).Entity!,
-            Person.Create("Ina", "Jackson", "ina.jackson@gmail.com", new byte[] { }, new byte[] { },
+            Person.Create("Ina", "Jackson", "ina.jackson@gmail.com", Array.Empty<byte>(), Array.Empty<byte>(),
                 new DateTime(1979, 5, 1), "Female", address).Entity!
         };
     }

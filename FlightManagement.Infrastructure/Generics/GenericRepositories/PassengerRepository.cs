@@ -19,13 +19,4 @@ public class PassengerRepository : Repository<Passenger>
             .Include(p => p.Baggages)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
-
-    public override async Task<IReadOnlyCollection<Passenger>> AllAsync()
-    {
-        return await Context.Passengers.Include(p => p.Person)
-            .Include(p => p.Flight)
-            .Include(p => p.Allergies)
-            .Include(p => p.Baggages)
-            .ToListAsync();
-    }
 }

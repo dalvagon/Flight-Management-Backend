@@ -7,17 +7,17 @@ namespace FlightManagement.Application.Validators
     {
         public CreatePersonCommandValidator()
         {
-            RuleFor(person => person.Name).NotNull();
-            RuleFor(person => person.Surname).NotNull();
-            RuleFor(person => person.Email).NotNull();
-            RuleFor(person => person.Password).NotNull();
+            RuleFor(person => person.Name).NotEmpty();
+            RuleFor(person => person.Surname).NotEmpty();
+            RuleFor(person => person.Email).NotEmpty();
+            RuleFor(person => person.Password).NotEmpty();
             RuleFor(person => person.DateOfBirth).NotNull();
-            RuleFor(person => person.Gender).NotNull();
+            RuleFor(person => person.Gender).NotEmpty();
             RuleFor(person => person.Address).NotNull();
-            RuleFor(person => person.Address.Number).NotNull();
-            RuleFor(person => person.Address.Street).NotNull();
-            RuleFor(person => person.Address.CityId).NotNull();
-            RuleFor(person => person.Address.CountryId).NotNull();
+            RuleFor(person => person.Address.Number).NotEmpty();
+            RuleFor(person => person.Address.Street).NotEmpty();
+            RuleFor(person => person.Address.CityId).NotEmpty();
+            RuleFor(person => person.Address.CountryId).NotEmpty();
         }
     }
 }

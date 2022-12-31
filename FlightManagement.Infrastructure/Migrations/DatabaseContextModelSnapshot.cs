@@ -44,27 +44,6 @@ namespace FlightManagement.Infrastructure.Migrations
                     b.ToTable("Addresses");
                 });
 
-            modelBuilder.Entity("FlightManagement.Domain.Entities.Administrator", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("CompanyId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("PersonId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompanyId");
-
-                    b.HasIndex("PersonId");
-
-                    b.ToTable("Administrators");
-                });
-
             modelBuilder.Entity("FlightManagement.Domain.Entities.Airport", b =>
                 {
                     b.Property<Guid>("Id")
@@ -153,23 +132,6 @@ namespace FlightManagement.Infrastructure.Migrations
                     b.HasIndex("CountryId");
 
                     b.ToTable("Cities");
-                });
-
-            modelBuilder.Entity("FlightManagement.Domain.Entities.Company", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Company");
                 });
 
             modelBuilder.Entity("FlightManagement.Domain.Entities.Country", b =>
@@ -316,21 +278,6 @@ namespace FlightManagement.Infrastructure.Migrations
                     b.Navigation("Country");
                 });
 
-            modelBuilder.Entity("FlightManagement.Domain.Entities.Administrator", b =>
-                {
-                    b.HasOne("FlightManagement.Domain.Entities.Company", "Company")
-                        .WithMany("Administrators")
-                        .HasForeignKey("CompanyId");
-
-                    b.HasOne("FlightManagement.Domain.Entities.Person", "Person")
-                        .WithMany()
-                        .HasForeignKey("PersonId");
-
-                    b.Navigation("Company");
-
-                    b.Navigation("Person");
-                });
-
             modelBuilder.Entity("FlightManagement.Domain.Entities.Airport", b =>
                 {
                     b.HasOne("FlightManagement.Domain.Entities.Address", "Address")
@@ -406,11 +353,6 @@ namespace FlightManagement.Infrastructure.Migrations
                         .HasForeignKey("AddressId");
 
                     b.Navigation("Address");
-                });
-
-            modelBuilder.Entity("FlightManagement.Domain.Entities.Company", b =>
-                {
-                    b.Navigation("Administrators");
                 });
 
             modelBuilder.Entity("FlightManagement.Domain.Entities.Flight", b =>

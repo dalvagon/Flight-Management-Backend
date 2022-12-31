@@ -2,7 +2,7 @@
 
 namespace FlightManagement.Application.Mappers;
 
-public class AirportMapper
+public static class AirportMapper
 {
     private static readonly Lazy<IMapper> Lazy = new(() =>
     {

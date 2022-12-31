@@ -3,7 +3,6 @@ using FlightManagement.Application.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 
 namespace FlightManagement.API.Controllers;
 
@@ -47,7 +46,6 @@ public class PeopleController : ControllerBase
 
 
     [HttpPost]
-    [Authorize(Roles = "User")]
     public async Task<IActionResult> Create([FromBody] CreatePersonCommand command)
     {
         var result = await _mediator.Send(command);

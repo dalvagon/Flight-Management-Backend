@@ -51,6 +51,24 @@ public class PassengerTests : BaseIntegrationTests<PassengersController>
     }
 
     [Fact]
+    public async Task WhenGetPassengerThatDoesNotExist_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var passengers = CreatePassengers();
+        await Context.Passengers.AddAsync(passengers[0]);
+        await Context.Passengers.AddAsync(passengers[1]);
+        await Context.SaveChangesAsync();
+
+        // Act
+        var response = await HttpClient.GetAsync(ApiUrl + Guid.Empty);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Be("Couldn't find passenger");
+    }
+
+    [Fact]
     public async Task WhenDeletePassenger_Then_ShouldDeletePassenger()
     {
         // Arrange
@@ -64,6 +82,23 @@ public class PassengerTests : BaseIntegrationTests<PassengersController>
         // Assert
         responseMessage.EnsureSuccessStatusCode();
         responseMessage.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task WhenDeletePassengerThatDoesNotExist_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var passenger = CreatePassengers()[0];
+        await Context.Passengers.AddAsync(passenger);
+        await Context.SaveChangesAsync();
+
+        // Act
+        var response = await HttpClient.DeleteAsync(ApiUrl + Guid.Empty);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Be("Couldn't delete passenger");
     }
 
     [Fact]
@@ -98,6 +133,69 @@ public class PassengerTests : BaseIntegrationTests<PassengersController>
         passengerResult!.Person.Name.Should().Be(passenger.Person.Name);
         passengerResult.Allergies.Count.Should().Be(2);
         passengerResult.Baggages.Count.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task WhenCreatePassengerForFlightThatDoesNotExist_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var passenger = CreatePassengers()[0];
+        var flight = CreateFlight();
+        await Context.Countries.AddAsync(passenger.Person.Address.Country);
+        await Context.Cities.AddAsync(passenger.Person.Address.City);
+        await Context.Addresses.AddAsync(passenger.Person.Address);
+        await Context.Flights.AddAsync(flight);
+        await Context.Allergies.AddRangeAsync(passenger.Allergies);
+        await Context.People.AddAsync(passenger.Person);
+        await Context.SaveChangesAsync();
+        var command = new CreatePassengerCommand()
+        {
+            PersonId = passenger.Person.Id,
+            FlightId = Guid.Empty,
+            Weight = passenger.Weight,
+            Baggages = passenger.Baggages.Select(b => BaggageMapper.Mapper.Map<CreateBaggageCommand>(b)).ToList(),
+            AllergyIds = passenger.Allergies.Select(a => a.Id).ToList()
+        };
+
+        // Act
+        var response = await HttpClient.PostAsJsonAsync(ApiUrl, command);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Be("Couldn't find flight");
+    }
+
+
+    [Fact]
+    public async Task WhenCreatePassengerForPersonThatDoesNotExist_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var passenger = CreatePassengers()[0];
+        var flight = CreateFlight();
+        await Context.Countries.AddAsync(passenger.Person.Address.Country);
+        await Context.Cities.AddAsync(passenger.Person.Address.City);
+        await Context.Addresses.AddAsync(passenger.Person.Address);
+        await Context.Flights.AddAsync(flight);
+        await Context.Allergies.AddRangeAsync(passenger.Allergies);
+        await Context.People.AddAsync(passenger.Person);
+        await Context.SaveChangesAsync();
+        var command = new CreatePassengerCommand()
+        {
+            PersonId = Guid.Empty,
+            FlightId = flight.Id,
+            Weight = passenger.Weight,
+            Baggages = passenger.Baggages.Select(b => BaggageMapper.Mapper.Map<CreateBaggageCommand>(b)).ToList(),
+            AllergyIds = passenger.Allergies.Select(a => a.Id).ToList()
+        };
+
+        // Act
+        var response = await HttpClient.PostAsJsonAsync(ApiUrl, command);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Be("Couldn't find person");
     }
 
     private static List<Passenger> CreatePassengers()
@@ -185,9 +283,9 @@ public class PassengerTests : BaseIntegrationTests<PassengersController>
 
         return new List<Person>
         {
-            Person.Create("John", "Doe", "john.doe@gmail.com", new byte[] { }, new byte[] { },
+            Person.Create("John", "Doe", "john.doe@gmail.com", Array.Empty<byte>(), Array.Empty<byte>(),
                 new DateTime(1998, 10, 11), "Male", address).Entity!,
-            Person.Create("Emma", "Doe", "emma.doe@gmail.com", new byte[] { }, new byte[] { },
+            Person.Create("Emma", "Doe", "emma.doe@gmail.com", Array.Empty<byte>(), Array.Empty<byte>(),
                 new DateTime(1998, 10, 11), "Female", address).Entity!
         };
     }

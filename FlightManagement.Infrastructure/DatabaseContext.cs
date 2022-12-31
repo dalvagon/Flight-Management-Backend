@@ -6,7 +6,6 @@ namespace FlightManagement.Infrastructure;
 public class DatabaseContext : DbContext
 {
     public DbSet<Address> Addresses { get; private set; }
-    public DbSet<Administrator> Administrators { get; private set; }
     public DbSet<Airport> Airports { get; private set; }
     public DbSet<Allergy> Allergies { get; private set; }
     public DbSet<Baggage> Baggages { get; private set; }

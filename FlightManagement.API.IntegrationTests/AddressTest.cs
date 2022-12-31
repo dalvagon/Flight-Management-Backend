@@ -21,7 +21,7 @@ public class AddressTest : BaseIntegrationTests<AddressesController>
         await Context.Cities.AddAsync(address.City);
         await Context.SaveChangesAsync();
 
-        var dto = new CreateAddressCommand()
+        var command = new CreateAddressCommand()
         {
             Number = address.Number,
             Street = address.Street,
@@ -30,7 +30,7 @@ public class AddressTest : BaseIntegrationTests<AddressesController>
         };
 
         // Act
-        var responseMessage = await HttpClient.PostAsJsonAsync(ApiUrl, dto);
+        var responseMessage = await HttpClient.PostAsJsonAsync(ApiUrl, command);
         var addressesResponseMessage = await HttpClient.GetAsync(ApiUrl);
         var addresses = await addressesResponseMessage.Content.ReadFromJsonAsync<List<Address>>();
 
@@ -38,6 +38,84 @@ public class AddressTest : BaseIntegrationTests<AddressesController>
         responseMessage.EnsureSuccessStatusCode();
         responseMessage.StatusCode.Should().Be(HttpStatusCode.Created);
         addresses?.Count.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task WhenCreateAddressWithCityThatDoesNotExist_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var address = CreateAddress();
+        await Context.Countries.AddAsync(address.Country);
+        await Context.Cities.AddAsync(address.City);
+        await Context.SaveChangesAsync();
+
+        var command = new CreateAddressCommand()
+        {
+            Number = address.Number,
+            Street = address.Street,
+            CityId = Guid.Empty,
+            CountryId = address.Country.Id
+        };
+
+        // Act
+        var response = await HttpClient.PostAsJsonAsync(ApiUrl, command);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Contain("'City Id' must not be empty.");
+    }
+
+    [Fact]
+    public async Task WhenCreateAddressWithCountryThatDoesNotExist_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var address = CreateAddress();
+        await Context.Countries.AddAsync(address.Country);
+        await Context.Cities.AddAsync(address.City);
+        await Context.SaveChangesAsync();
+
+        var command = new CreateAddressCommand()
+        {
+            Number = address.Number,
+            Street = address.Street,
+            CityId = address.City.Id,
+            CountryId = Guid.Empty
+        };
+
+        // Act
+        var response = await HttpClient.PostAsJsonAsync(ApiUrl, command);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Contain("'Country Id' must not be empty.");
+    }
+
+    [Fact]
+    public async Task WhenCreateAddressWithEmptyNumber_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var address = CreateAddress();
+        await Context.Countries.AddAsync(address.Country);
+        await Context.Cities.AddAsync(address.City);
+        await Context.SaveChangesAsync();
+
+        var command = new CreateAddressCommand()
+        {
+            Number = "",
+            Street = address.Street,
+            CityId = address.City.Id,
+            CountryId = address.Country.Id
+        };
+
+        // Act
+        var response = await HttpClient.PostAsJsonAsync(ApiUrl, command);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Contain("'Number' must not be empty.");
     }
 
     [Fact]

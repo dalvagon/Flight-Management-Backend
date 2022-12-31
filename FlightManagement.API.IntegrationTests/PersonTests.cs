@@ -52,6 +52,149 @@ public class PersonTests : BaseIntegrationTests<PeopleController>
     }
 
     [Fact]
+    public async Task WhenCreatePersonWithCityThatDoesNotExist_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var country = CreateCountry();
+        var city = CreateCity();
+        await Context.Countries.AddAsync(country);
+        await Context.Cities.AddAsync(city);
+        await Context.SaveChangesAsync();
+
+        var command = new CreatePersonCommand()
+        {
+            Name = "John",
+            Surname = "Doe",
+            Gender = "Male",
+            Password = "john1234",
+            Email = "john.doe@gmail.com",
+            DateOfBirth = new DateTime(1997, 2, 23),
+            Address = new CreateAddressCommand()
+            {
+                Number = "100",
+                Street = "Oak Street",
+                CityId = Guid.Empty,
+                CountryId = country.Id
+            }
+        };
+
+        // Act
+        var response = await HttpClient.PostAsJsonAsync(ApiUrl, command);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Contain("'Address City Id' must not be empty.");
+    }
+
+    [Fact]
+    public async Task WhenCreatePersonWithExistentEmail_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var person = CreatePerson();
+        await Context.AddAsync(person);
+        await Context.SaveChangesAsync();
+
+        var command = new CreatePersonCommand()
+        {
+            Name = "John",
+            Surname = "Doe",
+            Gender = "Male",
+            Password = "john1234",
+            Email = "john.doe@gmail.com",
+            DateOfBirth = new DateTime(1997, 2, 23),
+            Address = new CreateAddressCommand()
+            {
+                Number = "100",
+                Street = "Oak Street",
+                CityId = person.Address.City.Id,
+                CountryId = person.Address.Country.Id
+            }
+        };
+
+        // Act
+        var response = await HttpClient.PostAsJsonAsync(ApiUrl, command);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Contain("Person with this email already exists");
+    }
+
+
+    [Fact]
+    public async Task WhenCreatePersonWithCountryThatDoesNotExist_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var country = CreateCountry();
+        var city = CreateCity();
+        await Context.Countries.AddAsync(country);
+        await Context.Cities.AddAsync(city);
+        await Context.SaveChangesAsync();
+
+        var command = new CreatePersonCommand()
+        {
+            Name = "John",
+            Surname = "Doe",
+            Gender = "Male",
+            Password = "john1234",
+            Email = "john.doe@gmail.com",
+            DateOfBirth = new DateTime(1997, 2, 23),
+            Address = new CreateAddressCommand()
+            {
+                Number = "100",
+                Street = "Oak Street",
+                CityId = city.Id,
+                CountryId = Guid.Empty
+            }
+        };
+
+        // Act
+        var response = await HttpClient.PostAsJsonAsync(ApiUrl, command);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Contain("'Address Country Id' must not be empty.");
+    }
+
+    [Fact]
+    public async Task WhenCreatePersonWithEmptyNumber_Then_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var country = CreateCountry();
+        var city = CreateCity();
+        await Context.Countries.AddAsync(country);
+        await Context.Cities.AddAsync(city);
+        await Context.SaveChangesAsync();
+
+        var command = new CreatePersonCommand()
+        {
+            Name = "John",
+            Surname = "Doe",
+            Gender = "Male",
+            Password = "john1234",
+            Email = "john.doe@gmail.com",
+            DateOfBirth = new DateTime(1997, 2, 23),
+            Address = new CreateAddressCommand()
+            {
+                Number = "",
+                Street = "Oak Street",
+                CityId = city.Id,
+                CountryId = country.Id
+            }
+        };
+
+        // Act
+        var response = await HttpClient.PostAsJsonAsync(ApiUrl, command);
+        var responseMessage = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseMessage.Should().Contain("'Address Number' must not be empty.");
+    }
+
+    [Fact]
     public async Task WhenGetPerson_Then_ShouldReturnPerson()
     {
         // Arrange
@@ -189,7 +332,7 @@ public class PersonTests : BaseIntegrationTests<PeopleController>
 
     private static Person CreatePerson()
     {
-        return Person.Create("John", "Doe", "john.doe@gmail.com", new byte[] { }, new byte[] { },
+        return Person.Create("John", "Doe", "john.doe@gmail.com", Array.Empty<byte>(), Array.Empty<byte>(),
             new DateTime(1985, 11, 9), "Male", CreateAddress()).Entity!;
     }
 }

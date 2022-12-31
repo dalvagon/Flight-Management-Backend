@@ -8,18 +8,19 @@ using MediatR;
 
 namespace FlightManagement.Application.Handlers
 {
-    public class GetAllFlightsByDepartureAndDestinationCities : IRequestHandler<
-        GetAllFlightsFromDepartureAndDestinationCitiesQuery, Result<IReadOnlyCollection<FlightResponse>>>
+    public class GetAllFlightsByDepartureAndDestinationCitiesAndDepartureDate : IRequestHandler<
+        GetAllFlightsByDepartureAndDestinationCitiesAndDepartureDateQuery, Result<IReadOnlyCollection<FlightResponse>>>
     {
         private readonly IRepository<Flight> _flightRepository;
 
-        public GetAllFlightsByDepartureAndDestinationCities(IRepository<Flight> flightRepository)
+        public GetAllFlightsByDepartureAndDestinationCitiesAndDepartureDate(IRepository<Flight> flightRepository)
         {
             _flightRepository = flightRepository;
         }
 
         public async Task<Result<IReadOnlyCollection<FlightResponse>>> Handle(
-            GetAllFlightsFromDepartureAndDestinationCitiesQuery request, CancellationToken cancellationToken)
+            GetAllFlightsByDepartureAndDestinationCitiesAndDepartureDateQuery request,
+            CancellationToken cancellationToken)
         {
             var flights = FlightMapper.Mapper.Map<IReadOnlyCollection<FlightResponse>>(
                 await _flightRepository.FindAsync(flight =>

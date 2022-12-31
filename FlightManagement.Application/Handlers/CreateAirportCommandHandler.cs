@@ -27,34 +27,12 @@ namespace FlightManagement.Application.Handlers
         {
             var city = await _cityRepository.GetAsync(request.Address.CityId);
             var country = await _countryRepository.GetAsync(request.Address.CountryId);
-            if (city == null)
-            {
-                return Result<AirportResponse>.Failure("Couldn't find city");
-            }
-
-            if (country == null)
-            {
-                return Result<AirportResponse>.Failure("Couldn't find country");
-            }
 
             var address = Address.Create(request.Address.Number, request.Address.Street, city, country);
-            if (address.IsFailure)
-            {
-                return Result<AirportResponse>.Failure(address.Error!);
-            }
-
             var result = Airport.Create(request.Name, address.Entity!);
-            if (result.IsFailure)
-            {
-                return Result<AirportResponse>.Failure(result.Error!);
-            }
 
             var newAirport = await _airportRepository.AddAsync(result.Entity!);
             _airportRepository.SaveChangesAsync();
-            if (newAirport == null)
-            {
-                return Result<AirportResponse>.Failure("Couldn't save airport");
-            }
 
             var airport = AirportMapper.Mapper.Map<AirportResponse>(newAirport);
 
