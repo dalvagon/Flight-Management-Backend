@@ -49,7 +49,7 @@ public class FlightsController : ControllerBase
     }
 
     [HttpGet("{flightId:guid}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,User")]
     public async Task<IActionResult> Get(Guid flightId)
     {
         var result = await _mediator.Send(new GetFlightQuery() { FlightId = flightId });

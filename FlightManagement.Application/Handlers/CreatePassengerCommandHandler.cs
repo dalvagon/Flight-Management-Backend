@@ -56,6 +56,10 @@ namespace FlightManagement.Application.Handlers
             request.AllergyIds.ForEach(Action);
 
             var result = Passenger.Create(person, flight, request.Weight, baggages, allergies);
+	    if (result.IsFailure) 
+	    {
+		return Result<PassengerResponse>.Failure(result.Error);
+	    }
 
             var newPassenger = await _passengerRepository.AddAsync(result.Entity!);
             _passengerRepository.SaveChangesAsync();

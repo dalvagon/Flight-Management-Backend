@@ -38,6 +38,7 @@ namespace FlightManagement.Application.Handlers
         {
             var claims = new List<Claim>()
             {
+		new(ClaimTypes.NameIdentifier, person.Id.ToString()),
                 new(ClaimTypes.Name, person.Name),
                 new(ClaimTypes.Email, person.Email),
                 new(ClaimTypes.Surname, person.Surname),

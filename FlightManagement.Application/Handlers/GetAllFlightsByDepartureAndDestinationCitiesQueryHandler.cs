@@ -25,7 +25,8 @@ namespace FlightManagement.Application.Handlers
             var flights = FlightMapper.Mapper.Map<IReadOnlyCollection<FlightResponse>>(
                 await _flightRepository.FindAsync(flight =>
                     flight.DepartureAirport.Address.City.Name == request.DepartureCity &&
-                    flight.DestinationAirport.Address.City.Name == request.DestinationCity));
+                    flight.DestinationAirport.Address.City.Name == request.DestinationCity
+		    && flight.DepartureDate.Date == request.DepartureDate.Date));
 
             return Result<IReadOnlyCollection<FlightResponse>>.Success(flights);
         }

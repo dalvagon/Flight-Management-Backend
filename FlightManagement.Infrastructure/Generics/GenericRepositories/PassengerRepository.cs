@@ -1,4 +1,5 @@
-﻿using FlightManagement.Domain.Entities;
+﻿using System.Linq.Expressions;
+using FlightManagement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlightManagement.Infrastructure.Generics.GenericRepositories;
@@ -18,5 +19,16 @@ public class PassengerRepository : Repository<Passenger>
             .Include(p => p.Allergies)
             .Include(p => p.Baggages)
             .FirstOrDefaultAsync(p => p.Id == id);
+    }
+
+ public override async Task<IReadOnlyCollection<Passenger>> FindAsync(Expression<Func<Passenger, bool>> predicate)
+    {
+        return await Context.Passengers
+            .Include(p => p.Person)
+            .Include(p => p.Person).ThenInclude(p => p.Address)
+            .Include(p => p.Flight)
+            .Include(p => p.Allergies)
+            .Include(p => p.Baggages)
+            .Where(predicate).ToListAsync();
     }
 }
