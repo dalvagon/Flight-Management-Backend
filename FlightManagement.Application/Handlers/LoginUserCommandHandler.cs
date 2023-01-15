@@ -7,6 +7,7 @@ using FlightManagement.Domain.Entities;
 using FlightManagement.Domain.Helpers;
 using FlightManagement.Infrastructure.Generics;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace FlightManagement.Application.Handlers
@@ -14,10 +15,12 @@ namespace FlightManagement.Application.Handlers
     public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<TokenResponse>>
     {
         private readonly IRepository<Person> _personRepository;
+        private readonly IConfiguration _configuration;
 
-        public LoginUserCommandHandler(IRepository<Person> personRepository)
+        public LoginUserCommandHandler(IRepository<Person> personRepository, IConfiguration configuration)
         {
             _personRepository = personRepository;
+            _configuration = configuration;
         }
 
         public async Task<Result<TokenResponse>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
@@ -34,11 +37,11 @@ namespace FlightManagement.Application.Handlers
                 : Result<TokenResponse>.Success(new TokenResponse { Token = CreateToken(person) });
         }
 
-        private static string CreateToken(Person person)
+        private string CreateToken(Person person)
         {
             var claims = new List<Claim>()
             {
-		new(ClaimTypes.NameIdentifier, person.Id.ToString()),
+                new(ClaimTypes.NameIdentifier, person.Id.ToString()),
                 new(ClaimTypes.Name, person.Name),
                 new(ClaimTypes.Email, person.Email),
                 new(ClaimTypes.Surname, person.Surname),
@@ -46,13 +49,13 @@ namespace FlightManagement.Application.Handlers
             };
 
             var key = new SymmetricSecurityKey(
-                System.Text.Encoding.UTF8.GetBytes("FlightManagementTopSecretKey"));
+                "FlightManagementTopSecretKey"u8.ToArray());
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var token = new JwtSecurityToken(
-                "https://localhost:44340/",
-                "https://localhost:44340/",
+                _configuration.GetSection("Jwt:Issuer").Value!,
+                _configuration.GetSection("Jwt:Audience").Value!,
                 claims: claims,
                 expires: DateTime.Now.AddDays(1), signingCredentials: credentials);
 
