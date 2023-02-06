@@ -1,0 +1,8 @@
+﻿namespace FlightManagement.Application.Responses;
+
+public class CountryResponse
+{
+    public Guid Id { get; private set; }
+    public string Name { get; private set; }
+    public string Code { get; set; }
+}

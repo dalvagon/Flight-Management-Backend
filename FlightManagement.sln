@@ -1,0 +1,76 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32922.545
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlightManagement.Domain", "FlightManagement.Business\FlightManagement.Domain.csproj", "{A9BC6722-78B4-4061-8B28-0BA005C868BF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlightManagement.API", "FlightManagement.API\FlightManagement.API.csproj", "{9A7BAC77-F274-4979-B5CC-30A529632078}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A9BC6722-78B4-4061-8B28-0BA005C868BF} = {A9BC6722-78B4-4061-8B28-0BA005C868BF}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{53B4B30B-2B55-432A-839A-4BEE918381B8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebUi", "WebUi", "{491BB5B1-CA45-4410-8F94-163D8950839E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{7E865056-AACC-4C6B-9219-137347748B10}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{7F91F8EA-B9EF-4384-9ABA-A963C9608B31}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlightManagement.Infrastructure", "FlightManagement.Infrastructure\FlightManagement.Infrastructure.csproj", "{554EB015-A748-4908-ACE4-ABB62EDB7F70}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlightManagement.Business.Tests", "FlightManagement.Business.Tests\FlightManagement.Business.Tests.csproj", "{34FB3762-C4B6-40E2-9F63-2FD7581C38DD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlightManagement.API.IntegrationTests", "FlightManagement.API.IntegrationTests\FlightManagement.API.IntegrationTests.csproj", "{A228D352-8EEA-40E3-ABF9-BE5981F15C4C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{103053F6-A1B7-42C0-9030-DFCD8BC43F79}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightManagement.Application", "FlightManagement.Application\FlightManagement.Application.csproj", "{9CF252AD-3A89-440C-A660-4B0787B46BBB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A9BC6722-78B4-4061-8B28-0BA005C868BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9BC6722-78B4-4061-8B28-0BA005C868BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9BC6722-78B4-4061-8B28-0BA005C868BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9BC6722-78B4-4061-8B28-0BA005C868BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A7BAC77-F274-4979-B5CC-30A529632078}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A7BAC77-F274-4979-B5CC-30A529632078}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A7BAC77-F274-4979-B5CC-30A529632078}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A7BAC77-F274-4979-B5CC-30A529632078}.Release|Any CPU.Build.0 = Release|Any CPU
+		{554EB015-A748-4908-ACE4-ABB62EDB7F70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{554EB015-A748-4908-ACE4-ABB62EDB7F70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{554EB015-A748-4908-ACE4-ABB62EDB7F70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{554EB015-A748-4908-ACE4-ABB62EDB7F70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34FB3762-C4B6-40E2-9F63-2FD7581C38DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34FB3762-C4B6-40E2-9F63-2FD7581C38DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34FB3762-C4B6-40E2-9F63-2FD7581C38DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34FB3762-C4B6-40E2-9F63-2FD7581C38DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A228D352-8EEA-40E3-ABF9-BE5981F15C4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A228D352-8EEA-40E3-ABF9-BE5981F15C4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A228D352-8EEA-40E3-ABF9-BE5981F15C4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A228D352-8EEA-40E3-ABF9-BE5981F15C4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CF252AD-3A89-440C-A660-4B0787B46BBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CF252AD-3A89-440C-A660-4B0787B46BBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CF252AD-3A89-440C-A660-4B0787B46BBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CF252AD-3A89-440C-A660-4B0787B46BBB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A9BC6722-78B4-4061-8B28-0BA005C868BF} = {7E865056-AACC-4C6B-9219-137347748B10}
+		{9A7BAC77-F274-4979-B5CC-30A529632078} = {491BB5B1-CA45-4410-8F94-163D8950839E}
+		{554EB015-A748-4908-ACE4-ABB62EDB7F70} = {7F91F8EA-B9EF-4384-9ABA-A963C9608B31}
+		{34FB3762-C4B6-40E2-9F63-2FD7581C38DD} = {53B4B30B-2B55-432A-839A-4BEE918381B8}
+		{A228D352-8EEA-40E3-ABF9-BE5981F15C4C} = {53B4B30B-2B55-432A-839A-4BEE918381B8}
+		{9CF252AD-3A89-440C-A660-4B0787B46BBB} = {103053F6-A1B7-42C0-9030-DFCD8BC43F79}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FA282E20-799E-4A88-B840-F8D1671B044D}
+	EndGlobalSection
+EndGlobal
