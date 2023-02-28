@@ -11,4 +11,4 @@ The REST API is versioned and is built using the MediatR implementaiton of the m
 JWT tokens are used for user authentication and authorization.
 
 The unit tests and the integration tests for the API use the XUnit testing tool and FluentAssertions library.
-The code coverage, according to SnarQube, is 87.1%.
+The code coverage, according to SonarQube, is 87.1%.
