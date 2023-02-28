@@ -8,7 +8,7 @@ For data persistence, the relational database SQLite is used.
 FluentValidation library is used to validate the requests and AutoMapper to map one object to another.
 
 The REST API is versioned and is built using the MediatR implementaiton of the mediator design pattern.
-JWT tokens were used for user authentication and authorization.
+JWT tokens are used for user authentication and authorization.
 
 The unit tests and the integration tests for the API use the XUnit testing tool and FluentAssertions library.
 The code coverage, according to SnarQube, is 87.1%.
